@@ -1,0 +1,30 @@
+yarn run v1.22.21
+warning ..\..\..\..\package.json: No license field
+$ next dev --turbopack
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\AndreC\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\AndreC\Desktop\Teste\MagicShop\doceilusao-next\yarn.lock
+
+   ▲ Next.js 15.5.25 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.3:3000
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Compiled middleware in 450ms
+ ✓ Ready in 4.2s
+ ○ Compiling /login ...
+ ✓ Compiled /login in 7s
+ GET /login 200 in 1942ms
+ ○ Compiling /cadastro ...
+ GET /login 200 in 1284ms
+ ✓ Compiled /cadastro in 2.9s
+ GET /redefinir-senha 200 in 4615ms
+ GET /cadastro 200 in 4620ms
+ GET /verificar-email 200 in 4635ms
+ GET /esqueci-senha 200 in 4638ms
+error Command failed with exit code 1073807364.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
