@@ -15,17 +15,24 @@ import { prisma } from "@/lib/prisma";
 // Threat T-27-07-04: validate id is integer, direction is "up"|"down".
 
 type ReorderBody = { id: unknown; direction: unknown };
+type TCategories = {
+  name: string;
+  id: number;
+  sort_order: number | null;
+}[];
 
 // Fetch all categories ordered by sort_order then name (matches the shared rule).
 async function getOrderedCategories() {
-  const categories = await prisma.category.findMany({
+  const categories: TCategories = await prisma.category.findMany({
     select: { id: true, name: true, sort_order: true },
   });
 
   // Sort: null/0 → end, then name ascending (pt-BR locale)
   categories.sort((a, b) => {
-    const aRank = a.sort_order == null || a.sort_order === 0 ? Infinity : a.sort_order;
-    const bRank = b.sort_order == null || b.sort_order === 0 ? Infinity : b.sort_order;
+    const aRank =
+      a.sort_order == null || a.sort_order === 0 ? Infinity : a.sort_order;
+    const bRank =
+      b.sort_order == null || b.sort_order === 0 ? Infinity : b.sort_order;
     if (aRank !== bRank) return aRank - bRank;
     return a.name.localeCompare(b.name, "pt-BR");
   });
@@ -44,15 +51,20 @@ export async function POST(req: NextRequest) {
     body = await req.json();
   } catch {
     return NextResponse.json(
-      { error: "Corpo da requisição inválido", code: "INVALID_BODY", retryable: false },
+      {
+        error: "Corpo da requisição inválido",
+        code: "INVALID_BODY",
+        retryable: false,
+      },
       { status: 400 },
     );
   }
 
   // T-27-07-04: validate inputs
-  const id = typeof body.id === "number" && Number.isInteger(body.id) && body.id > 0
-    ? body.id
-    : null;
+  const id =
+    typeof body.id === "number" && Number.isInteger(body.id) && body.id > 0
+      ? body.id
+      : null;
   if (id === null) {
     return NextResponse.json(
       { error: "ID inválido", code: "INVALID_ID", retryable: false },
@@ -63,7 +75,11 @@ export async function POST(req: NextRequest) {
   const direction = body.direction;
   if (direction !== "up" && direction !== "down") {
     return NextResponse.json(
-      { error: "Direção inválida (use 'up' ou 'down')", code: "INVALID_DIRECTION", retryable: false },
+      {
+        error: "Direção inválida (use 'up' ou 'down')",
+        code: "INVALID_DIRECTION",
+        retryable: false,
+      },
       { status: 400 },
     );
   }
@@ -72,7 +88,11 @@ export async function POST(req: NextRequest) {
   const currentIndex = ordered.findIndex((c) => c.id === id);
   if (currentIndex === -1) {
     return NextResponse.json(
-      { error: "Categoria não encontrada", code: "NOT_FOUND", retryable: false },
+      {
+        error: "Categoria não encontrada",
+        code: "NOT_FOUND",
+        retryable: false,
+      },
       { status: 404 },
     );
   }
@@ -81,7 +101,9 @@ export async function POST(req: NextRequest) {
   const swapIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
   if (swapIndex < 0 || swapIndex >= ordered.length) {
     // Already at the boundary — no change needed, return current order as-is.
-    return NextResponse.json({ categories: ordered.map((c) => ({ id: c.id, sort_order: c.sort_order })) });
+    return NextResponse.json({
+      categories: ordered.map((c) => ({ id: c.id, sort_order: c.sort_order })),
+    });
   }
 
   // Swap in the local array
