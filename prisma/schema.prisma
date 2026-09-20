@@ -1,0 +1,450 @@
+// Doce Ilusão — Prisma schema (baseline from Phase 25, extended Phase 27)
+// Shared PostgreSQL — maps PascalCase Prisma models to snake_case DB tables via @map
+// Phase 25-02 (FOUND-03): 18-model baseline mirroring Wave-v1 SQLAlchemy tables.
+// Enum type names follow SQLAlchemy's PG convention (lowercased class names);
+// enum values verbatim from Python str-enums / values_callable.
+// VARCHAR lengths mirror SQLAlchemy String(N); plain String = TEXT.
+
+generator client {
+  provider = "prisma-client-js"
+  // Junction-relative: schema is reached via doceilusao-next\prisma junction,
+  // so ".." resolves to the app root -> real node_modules/.prisma/client
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Enums (SQLAlchemy SqlEnum columns) ─────────────────────────
+
+enum OrderStatus {
+  PENDING        @map("pending")
+  CONFIRMED      @map("confirmed")
+  PROCESSING     @map("processing")
+  SHIPPED        @map("shipped")
+  DELIVERED      @map("delivered")
+  CANCELED       @map("canceled")
+  PAYMENT_FAILED @map("payment_failed")
+  REFUNDED       @map("refunded")
+  RETURNED       @map("returned")
+  DISPUTED       @map("disputed")
+
+  @@map("orderstatus")
+}
+
+enum PaymentStatus {
+  PENDING    @map("pending")
+  PAID       @map("paid")
+  EXPIRED    @map("expired")
+  CANCELED   @map("canceled")
+  REFUNDED   @map("refunded")
+  REFUSED    @map("refused")
+  FAILED     @map("failed")
+  DISPUTED   @map("disputed")
+  CHARGEBACK @map("chargeback")
+
+  @@map("paymentstatus")
+}
+
+enum PaymentMethod {
+  PIX         @map("PIX")
+  CREDIT_CARD @map("CREDIT_CARD")
+
+  @@map("paymentmethod")
+}
+
+enum ContentType {
+  VIDEO @map("video")
+  PDF   @map("pdf")
+
+  @@map("contenttype")
+}
+
+// ─── Auth models ────────────────────────────────────────────────
+
+model User {
+  id                Int       @id @default(autoincrement()) @map("id")
+  uuid              String    @unique @map("uuid") @db.VarChar(36)
+  email             String    @unique @map("email")
+  password          String    @map("password")
+  scopes            Json?     @map("scopes")
+  role              String?   @map("role")
+  verification_code String?   @map("verification_code")
+  salt              String?   @map("salt")
+  code_expiry       DateTime? @map("code_expiry") @db.Timestamptz(6)
+  is_verified       Boolean?  @map("is_verified")
+  created_at        DateTime? @map("created_at") @db.Timestamp(6)
+  updated_at        DateTime? @map("updated_at") @db.Timestamp(6)
+
+  refresh_tokens    RefreshToken[]
+  carts             Cart[]
+  orders            Order[]
+  contents          Content[]
+  content_purchases ContentPurchase[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id         Int       @id @default(autoincrement()) @map("id")
+  jti        String    @unique @map("jti")
+  user_id    Int       @map("user_id")
+  expires_at DateTime  @map("expires_at") @db.Timestamptz(6)
+  revoked    Boolean?  @map("revoked")
+  created_at DateTime? @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@map("refresh_tokens")
+}
+
+// ─── Store models ──────────────────────────────────────────────
+
+model Category {
+  id            Int     @id @default(autoincrement()) @map("id")
+  name          String  @unique @map("name")
+  description   String? @map("description")
+  category_name String? @map("category_name")
+  website       String? @map("website")
+  logo_url      String? @map("logo_url")
+  sort_order    Int?    @map("sort_order")
+
+  products Product[]
+
+  @@map("category")
+}
+
+model Product {
+  id                 Int     @id @default(autoincrement()) @map("id")
+  name               String  @map("name")
+  description        String? @map("description")
+  price              Float   @map("price")
+  stock              Int     @map("stock")
+  reserved_stock     Int?    @map("reserved_stock")
+  sku                String? @unique @map("sku") @db.VarChar(50)
+  shipping_preset_id Int?    @map("shipping_preset_id")
+  weight_grams       Int     @map("weight_grams")
+  height_cm          Int     @map("height_cm")
+  width_cm           Int     @map("width_cm")
+  length_cm          Int     @map("length_cm")
+  discount           Float?  @map("discount")
+  sold_stock         Int?    @map("sold_stock")
+  image_urls         Json?   @map("image_urls")
+  category_id        Int     @map("category_id")
+
+  category        Category        @relation(fields: [category_id], references: [id])
+  shipping_preset ShippingPreset? @relation(fields: [shipping_preset_id], references: [id])
+
+  cart_items  CartItem[]
+  order_items OrderItem[]
+
+  @@map("products")
+}
+
+model ShippingPreset {
+  id           Int     @id @default(autoincrement()) @map("id")
+  name         String  @unique @map("name") @db.VarChar(50)
+  weight_grams Int     @map("weight_grams")
+  height_cm    Int     @map("height_cm")
+  discount     Float?  @map("discount")
+  width_cm     Int     @map("width_cm")
+  length_cm    Int     @map("length_cm")
+  is_active    Boolean @map("is_active")
+
+  products Product[]
+
+  @@map("shipping_presets")
+}
+
+// ─── Cart models ────────────────────────────────────────────────
+
+model Cart {
+  id         Int       @id @default(autoincrement()) @map("id")
+  user_id    Int       @map("user_id")
+  status     String?   @map("status")
+  created_at DateTime? @map("created_at") @db.Timestamp(6)
+  updated_at DateTime? @map("updated_at") @db.Timestamp(6)
+
+  user  User       @relation(fields: [user_id], references: [id])
+  items CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id           Int     @id @default(autoincrement()) @map("id")
+  cart_id      Int     @map("cart_id")
+  product_id   Int     @map("product_id")
+  product_name String  @map("product_name")
+  quantity     Int?    @map("quantity")
+  unit_price   Float   @map("unit_price")
+  total_price  Float   @map("total_price")
+  img_product  String? @map("img_product")
+  discount     Float?  @map("discount")
+  sku          String? @map("sku") @db.VarChar(50)
+
+  cart    Cart    @relation(fields: [cart_id], references: [id])
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@map("cart_items")
+}
+
+// ─── Order models ───────────────────────────────────────────────
+
+model Order {
+  id                      Int            @id @default(autoincrement()) @map("id")
+  uuid                    String         @unique @map("uuid") @db.VarChar(36)
+  user_id                 Int            @map("user_id")
+  status                  OrderStatus?   @map("status")
+  payment_status          PaymentStatus? @map("payment_status")
+  efipay_charge_pix_id    String?        @map("efipay_charge_pix_id")
+  efipay_charge_card_id   String?        @map("efipay_charge_card_id")
+  delivered_at            DateTime?      @map("delivered_at") @db.Timestamp(6)
+  shipped_at              DateTime?      @map("shipped_at") @db.Timestamp(6)
+  paid_at                 DateTime?      @map("paid_at") @db.Timestamp(6)
+  payment_method          PaymentMethod? @map("payment_method")
+  reservation_expires_at  DateTime?      @map("reservation_expires_at") @db.Timestamp(6)
+  shipping_carrier        String         @map("shipping_carrier")
+  shipping_method         String         @map("shipping_method")
+  shipping_cost           Float          @map("shipping_cost")
+  shipping_discount       Float?         @map("shipping_discount")
+  shipping_original       Float          @map("shipping_original")
+  shipping_delivery_days  Int            @map("shipping_delivery_days")
+  melhorenvio_shipment_id String?        @map("melhorenvio_shipment_id") @db.VarChar(50)
+  shipping_service_id     Int?           @map("shipping_service_id")
+  subtotal                Float?         @map("subtotal")
+  total                   Float?         @map("total")
+  created_at              DateTime?      @map("created_at") @db.Timestamp(6)
+  updated_at              DateTime?      @map("updated_at") @db.Timestamp(6)
+
+  user           User                    @relation(fields: [user_id], references: [id])
+  items          OrderItem[]
+  shipping       OrderShipping?
+  shipments      OrderShipment[]
+  status_history ShippingStatusHistory[]
+  pix_charges    PixCharge[]
+
+  @@index([efipay_charge_pix_id])
+  @@index([efipay_charge_card_id])
+  @@index([delivered_at])
+  @@index([melhorenvio_shipment_id])
+  @@map("orders")
+}
+
+model OrderItem {
+  id           Int     @id @default(autoincrement()) @map("id")
+  order_id     Int     @map("order_id")
+  product_id   Int     @map("product_id")
+  product_name String  @map("product_name") @db.VarChar(200)
+  img_product  String? @map("img_product")
+  quantity     Int     @map("quantity")
+  unit_price   Float   @map("unit_price")
+  total_price  Float   @map("total_price")
+
+  order   Order   @relation(fields: [order_id], references: [id])
+  product Product @relation(fields: [product_id], references: [id])
+
+  @@map("order_items")
+}
+
+model OrderShipping {
+  id                 Int       @id @default(autoincrement()) @map("id")
+  order_id           Int       @unique @map("order_id")
+  recipient_name     String    @map("recipient_name")
+  recipient_document String    @map("recipient_document")
+  recipient_phone    String    @map("recipient_phone")
+  recipient_email    String    @map("recipient_email")
+  street             String    @map("street")
+  number             String    @map("number")
+  complement         String?   @map("complement")
+  neighborhood       String    @map("neighborhood")
+  city               String    @map("city")
+  state              String    @map("state") @db.VarChar(2)
+  postal_code        String    @map("postal_code") @db.VarChar(8)
+  created_at         DateTime? @map("created_at") @db.Timestamp(6)
+  updated_at         DateTime? @map("updated_at") @db.Timestamp(6)
+
+  order Order @relation(fields: [order_id], references: [id])
+
+  @@map("order_shippings")
+}
+
+model OrderShipment {
+  id                    Int       @id @default(autoincrement()) @map("id")
+  order_id              Int       @map("order_id")
+  melhorenvio_cart_id   String?   @map("melhorenvio_cart_id") @db.VarChar(50)
+  melhorenvio_order_id  String?   @map("melhorenvio_order_id") @db.VarChar(50)
+  tracking_code         String?   @map("tracking_code") @db.VarChar(50)
+  tracking_url          String?   @map("tracking_url")
+  label_url             String?   @map("label_url")
+  shipping_company      String?   @map("shipping_company") @db.VarChar(50)
+  shipping_service      String?   @map("shipping_service") @db.VarChar(50)
+  shipping_status       String?   @map("shipping_status") @db.VarChar(30)
+  posted_at             DateTime? @map("posted_at") @db.Timestamp(6)
+  delivered_at          DateTime? @map("delivered_at") @db.Timestamp(6)
+  estimated_delivery_at DateTime? @map("estimated_delivery_at") @db.Timestamp(6)
+  is_reverse            Boolean?  @map("is_reverse")
+  reverse_order_id      String?   @map("reverse_order_id") @db.VarChar(50)
+  shipping_cost         Float?    @map("shipping_cost")
+  weight                Float?    @map("weight")
+  height                Float?    @map("height")
+  width                 Float?    @map("width")
+  length                Float?    @map("length")
+  created_at            DateTime? @map("created_at") @db.Timestamp(6)
+  updated_at            DateTime? @map("updated_at") @db.Timestamp(6)
+
+  order          Order                   @relation(fields: [order_id], references: [id])
+  status_history ShippingStatusHistory[]
+
+  @@index([order_id])
+  @@index([melhorenvio_cart_id])
+  @@index([melhorenvio_order_id])
+  @@index([tracking_code])
+  @@index([shipping_status])
+  @@map("order_shipments")
+}
+
+model ShippingStatusHistory {
+  id                       Int       @id @default(autoincrement()) @map("id")
+  order_id                 Int       @map("order_id")
+  shipment_id              Int?      @map("shipment_id")
+  melhorenvio_status       String    @map("melhorenvio_status") @db.VarChar(50)
+  melhorenvio_status_label String?   @map("melhorenvio_status_label") @db.VarChar(100)
+  message                  String?   @map("message") @db.VarChar(500)
+  location                 String?   @map("location") @db.VarChar(200)
+  raw_payload              String?   @map("raw_payload")
+  created_at               DateTime? @map("created_at") @db.Timestamp(6)
+
+  order    Order          @relation(fields: [order_id], references: [id])
+  shipment OrderShipment? @relation(fields: [shipment_id], references: [id])
+
+  @@index([order_id])
+  @@index([shipment_id])
+  @@map("shipping_status_history")
+}
+
+// ─── Payment models ─────────────────────────────────────────────
+
+model PixCharge {
+  id               Int       @id @default(autoincrement()) @map("id")
+  uuid             String    @unique @map("uuid") @db.VarChar(36)
+  txid             String    @unique @map("txid")
+  location         String?   @map("location")
+  pix_copia_e_cola String?   @map("pix_copia_e_cola")
+  imagem_qrcode    String?   @map("imagem_qrcode")
+  devedor_cpf      String?   @map("devedor_cpf") @db.VarChar(11)
+  devedor_nome     String?   @map("devedor_nome") @db.VarChar(100)
+  valor_original   Float     @map("valor_original")
+  status           String?   @map("status") @db.VarChar(50)
+  order_id         Int?      @map("order_id")
+  created_at       DateTime? @map("created_at") @db.Timestamp(6)
+  updated_at       DateTime? @map("updated_at") @db.Timestamp(6)
+  paid_at          DateTime? @map("paid_at") @db.Timestamp(6)
+  end_to_end_id    String?   @unique @map("end_to_end_id") @db.VarChar(100)
+
+  order Order? @relation(fields: [order_id], references: [id])
+
+  @@index([devedor_cpf])
+  @@index([status])
+  @@map("pix_charges")
+}
+
+// ─── Contents models ────────────────────────────────────────────
+
+model Content {
+  id               Int         @id @default(autoincrement()) @map("id")
+  uuid             String      @unique @map("uuid") @db.VarChar(36)
+  type             ContentType @map("type")
+  title            String      @map("title")
+  description      String?     @map("description")
+  duration         Int?        @map("duration")
+  difficulty       String?     @map("difficulty")
+  magic_type       String?     @map("magic_type")
+  s3_key           String      @unique @map("s3_key")
+  thumbnail_s3_key String?     @map("thumbnail_s3_key")
+  is_public        Boolean     @map("is_public")
+  required_scope   String?     @map("required_scope")
+  access_type      String?     @map("access_type")
+  status           String      @map("status")
+  is_paid          Boolean     @map("is_paid")
+  price_cents      Int?        @map("price_cents")
+  views            Int         @map("views")
+  category_id      String?     @map("category_id") @db.VarChar(36)
+  user_id          Int         @map("user_id")
+  created_at       DateTime?   @map("created_at") @db.Timestamp(6)
+  updated_at       DateTime?   @map("updated_at") @db.Timestamp(6)
+
+  user         User              @relation(fields: [user_id], references: [id])
+  category     ContentCategory?  @relation(fields: [category_id], references: [id])
+  content_tags ContentTag[]
+  purchases    ContentPurchase[]
+
+  @@index([type])
+  @@index([difficulty])
+  @@index([magic_type])
+  @@index([access_type])
+  @@index([status])
+  @@index([category_id])
+  @@map("contents")
+}
+
+model ContentCategory {
+  id          String    @id @map("id") @db.VarChar(36)
+  name        String    @unique @map("name")
+  description String?   @map("description")
+  sort_order  Int       @map("sort_order")
+  created_at  DateTime? @map("created_at") @db.Timestamp(6)
+  updated_at  DateTime? @map("updated_at") @db.Timestamp(6)
+
+  contents Content[]
+
+  @@map("content_categories")
+}
+
+model ContentTag {
+  content_id Int    @map("content_id")
+  tag_id     String @map("tag_id") @db.VarChar(36)
+
+  content Content @relation(fields: [content_id], references: [id])
+  tag     Tag     @relation(fields: [tag_id], references: [id])
+
+  @@id([content_id, tag_id])
+  @@map("content_tags")
+}
+
+model Tag {
+  id         String    @id @map("id") @db.VarChar(36)
+  name       String    @unique @map("name")
+  created_at DateTime? @map("created_at") @db.Timestamp(6)
+
+  content_tags ContentTag[]
+
+  @@map("tags")
+}
+
+model ContentPurchase {
+  id                    Int           @id @default(autoincrement()) @map("id")
+  uuid                  String        @unique @map("uuid") @db.VarChar(36)
+  user_id               Int           @map("user_id")
+  content_id            Int           @map("content_id")
+  price_paid_cents      Int           @map("price_paid_cents")
+  payment_method        PaymentMethod @map("payment_method")
+  efipay_charge_pix_id  String?       @map("efipay_charge_pix_id")
+  efipay_charge_card_id String?       @map("efipay_charge_card_id")
+  paid_at               DateTime?     @map("paid_at") @db.Timestamp(6)
+  created_at            DateTime?     @map("created_at") @db.Timestamp(6)
+
+  user    User    @relation(fields: [user_id], references: [id])
+  content Content @relation(fields: [content_id], references: [id])
+
+  @@unique([user_id, content_id], map: "uq_user_content_purchase")
+  @@index([user_id])
+  @@index([content_id])
+  @@index([efipay_charge_pix_id])
+  @@index([efipay_charge_card_id])
+  @@map("content_purchases")
+}
