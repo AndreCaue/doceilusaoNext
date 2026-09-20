@@ -50,9 +50,7 @@ const checkoutSchema = z.object({
   complement: z.string().optional(),
   neighborhood: z.string().min(1, "Bairro é obrigatório"),
   city: z.string().min(1, "Cidade é obrigatória"),
-  state: z
-    .string()
-    .length(2, "Estado deve ter 2 caracteres (UF)"),
+  state: z.string().length(2, "Estado deve ter 2 caracteres (UF)"),
   postal_code: z
     .string()
     .length(8, "CEP deve ter 8 dígitos")
@@ -65,6 +63,19 @@ const checkoutSchema = z.object({
   shipping_delivery_days: z.number().int().positive("Prazo inválido"),
   usar_seguro: z.boolean().optional().default(false),
 });
+
+type IntProduct = {
+  id: number;
+  product_id: number;
+  product_name: string;
+  img_product: string | null;
+  quantity: number | null;
+  unit_price: number;
+  total_price: number;
+  discount: number | null;
+  sku: string | null;
+  cart_id: number;
+};
 
 const RESERVATION_HOURS = 6;
 const RESERVATION_SECONDS = RESERVATION_HOURS * 60 * 60;
@@ -102,7 +113,11 @@ export async function POST(req: NextRequest) {
     });
     if (!dbUser) {
       return NextResponse.json(
-        { error: "Usuário não encontrado", code: "USER_NOT_FOUND", retryable: false },
+        {
+          error: "Usuário não encontrado",
+          code: "USER_NOT_FOUND",
+          retryable: false,
+        },
         { status: 401 },
       );
     }
@@ -132,7 +147,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Resolve unique product IDs from cart items for row locking
-    const productIds = [...new Set(cart.items.map((i) => i.product_id))];
+    const productIds = [
+      ...new Set(cart.items.map((i: IntProduct) => i.product_id)),
+    ];
 
     // ─── Prisma interactive transaction with row locks (T-28-04-01) ───
     const order = await prisma.$transaction(async (tx) => {
@@ -152,9 +169,7 @@ export async function POST(req: NextRequest) {
       `;
 
       // Build a lookup map for locked products
-      const productMap = new Map(
-        lockedProducts.map((p) => [p.id, p]),
-      );
+      const productMap = new Map(lockedProducts.map((p) => [p.id, p]));
 
       // Revalidate stock for each item (T-28-04-01: prevent oversell)
       for (const item of cart.items) {
@@ -164,8 +179,7 @@ export async function POST(req: NextRequest) {
         }
 
         const itemQty = item.quantity ?? 0;
-        const availableStock =
-          product.stock - (product.reserved_stock ?? 0);
+        const availableStock = product.stock - (product.reserved_stock ?? 0);
         if (itemQty > availableStock) {
           throw new Error(
             `Estoque insuficiente para "${item.product_name}". Disponível: ${availableStock}`,
@@ -175,10 +189,7 @@ export async function POST(req: NextRequest) {
 
       // Calculate totals (use DB-computed cart totals, not stale request data)
       const subtotal = cart.items.reduce((s, i) => s + i.total_price, 0);
-      const discount = cart.items.reduce(
-        (s, i) => s + (i.discount ?? 0),
-        0,
-      );
+      const discount = cart.items.reduce((s, i) => s + (i.discount ?? 0), 0);
       const total = subtotal - discount + data.shipping_cost;
 
       // Create the Order
@@ -287,7 +298,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Product deleted between cart load and checkout → meaningful 400
-    if (err instanceof Error && err.message.includes("Produto não encontrado")) {
+    if (
+      err instanceof Error &&
+      err.message.includes("Produto não encontrado")
+    ) {
       return NextResponse.json(
         { error: err.message, code: "PRODUCT_NOT_FOUND", retryable: false },
         { status: 400 },
