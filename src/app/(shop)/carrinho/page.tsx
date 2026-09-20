@@ -6,6 +6,7 @@
 
 import { DisplayBackground } from "@/components/shop/DisplayBackground";
 import { DisplayHeader } from "@/components/shop/DisplayHeader";
+import React from "react";
 import { CartPage } from "@/components/shop/CartPage";
 
 export default function CarrinhoPage() {
