@@ -28,4 +28,4 @@ next-env.d.ts
 # prisma (schema + migrations live at repo-root prisma/; app keeps a junction
 # doceilusao-next/prisma -> ../prisma so the prisma CLI resolves against
 # doceilusao-next/node_modules — see 25-01 Conformance Resolutions)
-/prisma/
+# /prisma/
