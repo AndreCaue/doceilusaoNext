@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { AnimatePresence, easeInOut, motion } from "framer-motion";
 import { ProductSection } from "./ProductSection";
 import type { CatalogProduct } from "@/lib/types/catalog";

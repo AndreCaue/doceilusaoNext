@@ -31,6 +31,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -81,7 +82,8 @@ function ResetPasswordForm() {
     // Byte-based max check to match the server-side TextEncoder guard
     // (reset-password/route.ts:72) and the bcrypt 72-byte limit — mirrors the
     // /cadastro validator (cadastro/page.tsx:58).
-    if (new TextEncoder().encode(password).length > 72) return "Senha deve ter no máximo 72 caracteres";
+    if (new TextEncoder().encode(password).length > 72)
+      return "Senha deve ter no máximo 72 caracteres";
     if (confirm !== password) return "As senhas não coincidem";
     return null;
   }
@@ -132,7 +134,9 @@ function ResetPasswordForm() {
       }
 
       // Other 4xx (format/size/404) or 5xx — inline the D-12 message.
-      setError(serverMessage ?? "Não foi possível redefinir a senha. Tente novamente.");
+      setError(
+        serverMessage ?? "Não foi possível redefinir a senha. Tente novamente.",
+      );
     } catch {
       setError("Não foi possível redefinir a senha. Tente novamente.");
     } finally {
@@ -144,7 +148,9 @@ function ResetPasswordForm() {
   if (invalidToken) {
     return (
       <>
-        <h2 className="mb-6 text-center text-xl font-semibold">Link inválido</h2>
+        <h2 className="mb-6 text-center text-xl font-semibold">
+          Link inválido
+        </h2>
 
         <p
           role="alert"
@@ -154,8 +160,8 @@ function ResetPasswordForm() {
         </p>
 
         <p className="mb-8 text-center text-sm text-muted-foreground">
-          O link de recuperação é inválido ou já foi utilizado. Solicite um
-          novo link para redefinir sua senha.
+          O link de recuperação é inválido ou já foi utilizado. Solicite um novo
+          link para redefinir sua senha.
         </p>
 
         <Button size="lg" className="w-full" asChild>
@@ -221,9 +227,7 @@ function ResetPasswordForm() {
             onChange={(e) => setPassword(e.target.value)}
             disabled={isLoading}
           />
-          <p className="text-xs text-muted-foreground">
-            mínimo 6 caracteres
-          </p>
+          <p className="text-xs text-muted-foreground">mínimo 6 caracteres</p>
         </div>
 
         <div className="flex flex-col gap-2">

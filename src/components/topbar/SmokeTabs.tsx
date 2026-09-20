@@ -3,8 +3,13 @@
 import { SmokeLink } from "@/components/new/SmokeLink";
 import { SmokeButton } from "@/components/new/SmokeButton";
 import { cn } from "@/lib/utils";
-import { SmokeSubTab, SmokeSubTabConteudo, SmokeSubTabJogos } from "../topbar/utils";
+import {
+  SmokeSubTab,
+  SmokeSubTabConteudo,
+  SmokeSubTabJogos,
+} from "../topbar/utils";
 import { useEffect, useRef, type Dispatch, type SetStateAction } from "react";
+import React from "react";
 
 type TSmokeTabs = {
   tabs: { id: string; label: string; disabled?: boolean }[];

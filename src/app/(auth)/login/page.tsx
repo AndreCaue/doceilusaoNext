@@ -26,6 +26,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -88,7 +89,9 @@ function LoginForm() {
         // same spelling as the stored (lowercased) account email shown in the
         // verification email itself.
         if (body?.is_verified === false) {
-          router.push(`/verificar-email?email=${encodeURIComponent(email.toLowerCase())}`);
+          router.push(
+            `/verificar-email?email=${encodeURIComponent(email.toLowerCase())}`,
+          );
           return;
         }
 
@@ -186,7 +189,10 @@ function LoginForm() {
           </Link>
           <p className="text-muted-foreground">
             Não tem uma conta?{" "}
-            <Link href="/cadastro" className="font-medium text-primary hover:underline">
+            <Link
+              href="/cadastro"
+              className="font-medium text-primary hover:underline"
+            >
               Criar conta
             </Link>
           </p>

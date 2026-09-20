@@ -4,7 +4,7 @@
 // with image thumb, name, category, price, stock/remaining, and Edit/Delete
 // actions. Delete confirms via shadcn AlertDialog then proxies to
 // DELETE /api/admin/products/[id] and refreshes (T-27-06-04).
-
+import React from "react";
 import { useState, useTransition } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -45,10 +45,14 @@ export function ProductList({ products }: { products: CatalogProduct[] }) {
   const handleDelete = async (id: number) => {
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/products/${id}`, {
+        method: "DELETE",
+      });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
-        toast.error(body?.error ?? "Erro ao excluir produto. Tente novamente mais tarde.");
+        toast.error(
+          body?.error ?? "Erro ao excluir produto. Tente novamente mais tarde.",
+        );
         return;
       }
       toast.success("Produto removido com sucesso.");
@@ -127,8 +131,8 @@ export function ProductList({ products }: { products: CatalogProduct[] }) {
                     <AlertDialogHeader>
                       <AlertDialogTitle>Excluir produto</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Excluir produto: Esta ação não pode ser desfeita. Confirmar
-                        exclusão?
+                        Excluir produto: Esta ação não pode ser desfeita.
+                        Confirmar exclusão?
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

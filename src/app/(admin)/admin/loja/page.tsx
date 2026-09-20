@@ -6,6 +6,7 @@
 import { listAdminProducts } from "@/lib/catalog";
 import { ProductList } from "@/components/admin/ProductList";
 import { Button } from "@/components/ui/button";
+import React from "react";
 
 // Admin product list is a live view (master-gated, Prisma read) — never static.
 // Force request-time rendering so deletes/edits reflect immediately (D-02).

@@ -7,6 +7,7 @@
 //
 // Props are serialized from the Server Component (no Date objects).
 
+import React from "react";
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -86,8 +87,7 @@ const OrderConfirmation = ({ order, expired }: OrderConfirmationProps) => {
           Pedido confirmado
         </h2>
         <p className="text-sm text-muted-foreground mt-2">
-          Pedido{" "}
-          <span className="font-mono text-slate-300">{order.uuid}</span>
+          Pedido <span className="font-mono text-slate-300">{order.uuid}</span>
         </p>
       </div>
 
@@ -222,7 +222,9 @@ const OrderConfirmation = ({ order, expired }: OrderConfirmationProps) => {
           createPixCharge rejects (D-08) and createCardOneStep now rejects too
           (WR-06 server parity). An already-PAID order still renders its
           confirmation surface (e.g. post-payment refresh). */}
-      {(!expired || order.payment_status === "PAID") && <PaymentTabs order={order} />}
+      {(!expired || order.payment_status === "PAID") && (
+        <PaymentTabs order={order} />
+      )}
     </div>
   );
 };

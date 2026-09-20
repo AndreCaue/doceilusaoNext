@@ -6,6 +6,7 @@
 import { listAdminCategories } from "@/lib/catalog";
 import { CategoryList } from "@/components/admin/CategoryList";
 import { Button } from "@/components/ui/button";
+import React from "react";
 
 // Admin category list is a live view (master-gated, Prisma read) — never static.
 // Force request-time rendering so reorders/edits/deletes reflect immediately (D-02).

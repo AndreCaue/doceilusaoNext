@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CategoryForm } from "@/components/admin/CategoryForm";
 import type { CatalogCategory } from "@/lib/types/catalog";
+import React from "react";
 
 export const dynamic = "force-dynamic";
 

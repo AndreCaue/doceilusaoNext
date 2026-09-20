@@ -11,6 +11,7 @@
 //     only after support analysis
 //   - loading skeletons, empty state with CTA to /loja, error + retry
 
+import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -29,8 +30,14 @@ vi.mock("next/navigation", () => ({
 vi.mock("next/link", () => {
   const React = require("react") as typeof import("react");
   return {
-    default: ({ href, children, ...rest }: { href: string; children?: ReactNode }) =>
-      React.createElement("a", { href, ...rest }, children),
+    default: ({
+      href,
+      children,
+      ...rest
+    }: {
+      href: string;
+      children?: ReactNode;
+    }) => React.createElement("a", { href, ...rest }, children),
   };
 });
 
@@ -124,8 +131,13 @@ describe("OrdersTable", () => {
     respond([]);
     render(<OrdersTable userId={7} />);
 
-    expect(await screen.findByText("Você ainda não tem pedidos")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Explorar loja" })).toHaveAttribute("href", "/loja");
+    expect(
+      await screen.findByText("Você ainda não tem pedidos"),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Explorar loja" })).toHaveAttribute(
+      "href",
+      "/loja",
+    );
   });
 
   it("shows error state and retries on failure", async () => {
@@ -133,13 +145,18 @@ describe("OrdersTable", () => {
     respond([ORDER_1]);
     render(<OrdersTable userId={7} />);
 
-    expect(await screen.findByText("Não foi possível carregar seus pedidos.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Não foi possível carregar seus pedidos."),
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Tentar novamente" }));
 
     expect(await screen.findByText("P-11111")).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(fetchMock).toHaveBeenLastCalledWith("/api/orders/list", expect.any(Object));
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      "/api/orders/list",
+      expect.any(Object),
+    );
   });
 
   it("never sends a user id to filter by (T-30-04-01)", async () => {
@@ -152,7 +169,10 @@ describe("OrdersTable", () => {
     expect(String(init?.body ?? "")).not.toContain("7");
     expect(JSON.stringify(init)).not.toContain("userId");
     // the session id appears only as a debug attribute on the container
-    expect(screen.getByTestId("orders-table")).toHaveAttribute("data-user-id", "7");
+    expect(screen.getByTestId("orders-table")).toHaveAttribute(
+      "data-user-id",
+      "7",
+    );
   });
 
   it("paginates at 5/page by default with page 1 of 2", async () => {
@@ -175,9 +195,14 @@ describe("OrdersTable", () => {
     expect(await screen.findByText("P-60000")).toBeInTheDocument();
     expect(screen.getAllByText(/^P-\d{5}$/)).toHaveLength(1);
     expect(screen.getByText(/PÁGINA 2 DE 2/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Próxima página" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Próxima página" }),
+    ).toBeDisabled();
 
-    await user.selectOptions(screen.getByRole("combobox", { name: "Itens por página" }), "10");
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Itens por página" }),
+      "10",
+    );
     expect(screen.getAllByText(/^P-\d{5}$/)).toHaveLength(6);
     expect(screen.getByText(/PÁGINA 1 DE 1/)).toBeInTheDocument();
   });
@@ -205,7 +230,9 @@ describe("OrdersTable", () => {
     respond([ORDER_1]);
     render(<OrdersTable userId={7} />);
 
-    const refund = await screen.findByRole("button", { name: /Solicitar Devolução/ });
+    const refund = await screen.findByRole("button", {
+      name: /Solicitar Devolução/,
+    });
     expect(refund).toHaveAttribute("aria-disabled", "true");
     expect(refund).toHaveAttribute("title");
     fireEvent.click(refund);

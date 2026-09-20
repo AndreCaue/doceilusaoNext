@@ -18,6 +18,7 @@
 //     on "Email") + "Fazer login" link; other D-12 400s → error.message.
 //   * Errors render as text nodes ({error}) — never dangerouslySetInnerHTML
 //     with response-controlled strings (T-26-10-05).
+import React from "react";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -55,7 +56,8 @@ export default function RegisterPage() {
     if (password.length < 6) return "Senha deve ter 6 caracteres";
     // Byte-based max check to match the server-side TextEncoder guard and
     // the bcrypt 72-byte limit (password.ts / reset-password/route.ts:81).
-    if (new TextEncoder().encode(password).length > 72) return "Senha deve ter no máximo 72 caracteres";
+    if (new TextEncoder().encode(password).length > 72)
+      return "Senha deve ter no máximo 72 caracteres";
     return null;
   }
 
@@ -98,7 +100,9 @@ export default function RegisterPage() {
         // 400s: "Email já cadastrado", "Senha deve ter 6 caracteres", etc.
         // (D-12 shape) — show the message inline; the duplicate case gets the
         // extra "Fazer login" link below.
-        setError(body?.error ?? "Não foi possível criar a conta. Tente novamente.");
+        setError(
+          body?.error ?? "Não foi possível criar a conta. Tente novamente.",
+        );
       }
     } catch {
       setError("Não foi possível criar a conta. Tente novamente.");
@@ -113,7 +117,9 @@ export default function RegisterPage() {
   if (created) {
     return (
       <>
-        <h2 className="mb-6 text-center text-xl font-semibold">Conta criada com sucesso</h2>
+        <h2 className="mb-6 text-center text-xl font-semibold">
+          Conta criada com sucesso
+        </h2>
 
         <div
           role="status"
@@ -124,11 +130,16 @@ export default function RegisterPage() {
         </div>
 
         <p className="mb-8 text-center text-sm text-muted-foreground">
-          Verifique sua caixa de entrada — incluindo a pasta de spam — e confirme
-          sua conta. O código expira em 15 minutos.
+          Verifique sua caixa de entrada — incluindo a pasta de spam — e
+          confirme sua conta. O código expira em 15 minutos.
         </p>
 
-        <Button type="button" size="lg" className="w-full" onClick={() => router.push("/login")}>
+        <Button
+          type="button"
+          size="lg"
+          className="w-full"
+          onClick={() => router.push("/login")}
+        >
           Fazer login
         </Button>
 
@@ -176,9 +187,7 @@ export default function RegisterPage() {
             onChange={(e) => setPassword(e.target.value)}
             disabled={isLoading}
           />
-          <p className="text-xs text-muted-foreground">
-            mínimo 6 caracteres
-          </p>
+          <p className="text-xs text-muted-foreground">mínimo 6 caracteres</p>
         </div>
 
         {error && (
@@ -190,7 +199,10 @@ export default function RegisterPage() {
         {error === "Email já cadastrado" && (
           <p className="-mt-2 text-sm text-muted-foreground">
             Já tem uma conta?{" "}
-            <Link href="/login" className="font-medium text-primary hover:underline">
+            <Link
+              href="/login"
+              className="font-medium text-primary hover:underline"
+            >
               Fazer login
             </Link>
           </p>
@@ -202,7 +214,10 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-muted-foreground">
           Já tem conta?{" "}
-          <Link href="/login" className="font-medium text-primary hover:underline">
+          <Link
+            href="/login"
+            className="font-medium text-primary hover:underline"
+          >
             Entrar
           </Link>
         </p>

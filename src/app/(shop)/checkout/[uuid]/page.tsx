@@ -11,6 +11,7 @@
 import { notFound, redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
+import React from "react";
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUserOptional } from "@/lib/auth/guards";
@@ -23,6 +24,17 @@ import {
 
 type PageProps = {
   params: Promise<{ uuid: string }>;
+};
+
+type TOrderItens = {
+  id: number;
+  order_id: number;
+  product_id: number;
+  product_name: string;
+  img_product: string | null;
+  quantity: number;
+  unit_price: number;
+  total_price: number;
 };
 
 export default async function OrderConfirmationPage({ params }: PageProps) {
@@ -88,7 +100,7 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
     shipping_original: order.shipping_original,
     shipping_delivery_days: order.shipping_delivery_days,
     created_at: order.created_at?.toISOString() ?? null,
-    items: order.items.map((item) => ({
+    items: order.items.map((item: TOrderItens) => ({
       product_name: item.product_name,
       quantity: item.quantity,
       unit_price: item.unit_price,

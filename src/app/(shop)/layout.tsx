@@ -2,6 +2,7 @@
 
 import { Topbar } from "@/components/topbar/Topbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import React from "react";
 
 // Public store route group — applies the Topbar to every public store page.
 // Wrapped in SidebarProvider because Topbar renders a SidebarTrigger (mobile

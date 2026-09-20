@@ -5,6 +5,7 @@
 // trash actions, totals block with sticky right column, and the
 // "Finalizar compra" CTA. Empty state per UI-SPEC copy.
 
+import React from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
@@ -95,10 +96,7 @@ const CartPage = () => {
           <p className="text-gray-300 mt-4 text-lg">
             Explore a loja e adicione produtos para começar.
           </p>
-          <Button
-            className="mt-8 h-10"
-            onClick={() => router.push("/loja")}
-          >
+          <Button className="mt-8 h-10" onClick={() => router.push("/loja")}>
             Explorar loja
           </Button>
         </div>
@@ -110,111 +108,113 @@ const CartPage = () => {
     <div className="space-y-6">
       <ActiveOrderBanner {...activeOrder} />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* Item list — left / main column */}
-      <div className="lg:col-span-2 space-y-4">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="rounded-xl bg-neutral-900/60 backdrop-blur p-4 flex gap-4"
-          >
-            <div className="relative h-24 w-24 rounded-md overflow-hidden bg-slate-800 flex-shrink-0">
-              {item.img_product ? (
-                <Image
-                  src={item.img_product}
-                  alt={item.product_name}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <div className="h-full w-full bg-slate-700 flex items-center justify-center text-xs text-muted-foreground">
-                  &#128247;
+        {/* Item list — left / main column */}
+        <div className="lg:col-span-2 space-y-4">
+          {items.map((item) => (
+            <div
+              key={item.id}
+              className="rounded-xl bg-neutral-900/60 backdrop-blur p-4 flex gap-4"
+            >
+              <div className="relative h-24 w-24 rounded-md overflow-hidden bg-slate-800 flex-shrink-0">
+                {item.img_product ? (
+                  <Image
+                    src={item.img_product}
+                    alt={item.product_name}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="h-full w-full bg-slate-700 flex items-center justify-center text-xs text-muted-foreground">
+                    &#128247;
+                  </div>
+                )}
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-4">
+                  <p className="font-medium text-slate-200">
+                    {item.product_name}
+                  </p>
+                  <button
+                    onClick={() => handleRemove(item)}
+                    className="p-1 rounded text-muted-foreground hover:text-red-400 hover:bg-red-400/10 transition-colors flex-shrink-0"
+                    aria-label="Remover item"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                  </button>
                 </div>
-              )}
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-4">
-                <p className="font-medium text-slate-200">{item.product_name}</p>
-                <button
-                  onClick={() => handleRemove(item)}
-                  className="p-1 rounded text-muted-foreground hover:text-red-400 hover:bg-red-400/10 transition-colors flex-shrink-0"
-                  aria-label="Remover item"
-                >
-                  <Trash2 className="h-5 w-5" />
-                </button>
-              </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                Preço unitário: {formatBRL(item.unit_price)}
-              </p>
-              <div className="flex items-center justify-between mt-3">
-                <QuantitySelector
-                  key={`${item.id}-${item.quantity}-${revision}`}
-                  maxQuantity={Infinity}
-                  initialValue={item.quantity}
-                  onChange={(qty: number) => {
-                    if (qty !== item.quantity) {
-                      handleQuantityChange(item.id, qty);
-                    }
-                  }}
-                />
-                <p className="text-base font-semibold text-slate-200">
-                  {formatBRL(item.total_price)}
+                <p className="text-sm text-muted-foreground mt-1">
+                  Preço unitário: {formatBRL(item.unit_price)}
                 </p>
+                <div className="flex items-center justify-between mt-3">
+                  <QuantitySelector
+                    key={`${item.id}-${item.quantity}-${revision}`}
+                    maxQuantity={Infinity}
+                    initialValue={item.quantity}
+                    onChange={(qty: number) => {
+                      if (qty !== item.quantity) {
+                        handleQuantityChange(item.id, qty);
+                      }
+                    }}
+                  />
+                  <p className="text-base font-semibold text-slate-200">
+                    {formatBRL(item.total_price)}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {/* Totals block — right column, sticky on lg */}
-      <div className="lg:sticky lg:top-24 h-fit">
-        <div className="rounded-xl bg-neutral-900/60 backdrop-blur p-6 space-y-4">
-          <h3 className="text-xl font-semibold text-slate-200">
-            Resumo do pedido
-          </h3>
+        {/* Totals block — right column, sticky on lg */}
+        <div className="lg:sticky lg:top-24 h-fit">
+          <div className="rounded-xl bg-neutral-900/60 backdrop-blur p-6 space-y-4">
+            <h3 className="text-xl font-semibold text-slate-200">
+              Resumo do pedido
+            </h3>
 
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Subtotal</span>
-            <span className="text-slate-200">{formatBRL(subtotal)}</span>
-          </div>
-
-          {discount > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Desconto</span>
-              <span className="text-green-400">
-                -{formatBRL(discount)}
+              <span className="text-muted-foreground">Subtotal</span>
+              <span className="text-slate-200">{formatBRL(subtotal)}</span>
+            </div>
+
+            {discount > 0 && (
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Desconto</span>
+                <span className="text-green-400">-{formatBRL(discount)}</span>
+              </div>
+            )}
+
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Frete</span>
+              <span className="text-slate-300">calcular no checkout</span>
+            </div>
+
+            <div className="border-t border-slate-800 pt-4 flex justify-between items-center">
+              <span className="text-xl font-semibold text-slate-200">
+                Total
+              </span>
+              <span className="text-xl font-semibold text-slate-200">
+                {formatBRL(total)}
               </span>
             </div>
-          )}
 
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Frete</span>
-            <span className="text-slate-300">calcular no checkout</span>
+            <Button
+              className="w-full h-10 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white border border-green-700 text-base"
+              onClick={() => router.push("/checkout")}
+              disabled={activeOrder.hasActive}
+              aria-disabled={activeOrder.hasActive}
+              title={
+                activeOrder.hasActive
+                  ? "Você já tem um pedido em andamento"
+                  : undefined
+              }
+            >
+              Finalizar compra
+            </Button>
           </div>
-
-          <div className="border-t border-slate-800 pt-4 flex justify-between items-center">
-            <span className="text-xl font-semibold text-slate-200">Total</span>
-            <span className="text-xl font-semibold text-slate-200">
-              {formatBRL(total)}
-            </span>
-          </div>
-
-          <Button
-            className="w-full h-10 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white border border-green-700 text-base"
-            onClick={() => router.push("/checkout")}
-            disabled={activeOrder.hasActive}
-            aria-disabled={activeOrder.hasActive}
-            title={
-              activeOrder.hasActive
-                ? "Você já tem um pedido em andamento"
-                : undefined
-            }
-          >
-            Finalizar compra
-          </Button>
         </div>
-      </div>
       </div>
     </div>
   );

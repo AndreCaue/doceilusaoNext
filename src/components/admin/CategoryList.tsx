@@ -7,7 +7,7 @@
 //
 // Threat T-27-07-04: reorder validates id and direction server-side.
 // Threat T-27-07-03: delete propagates Python's 400 guard message to the UI.
-
+import React from "react";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -34,7 +34,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export function CategoryList({ categories }: { categories: CatalogCategory[] }) {
+export function CategoryList({
+  categories,
+}: {
+  categories: CatalogCategory[];
+}) {
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [deletingId, setDeletingId] = useState<number | null>(null);
@@ -43,12 +47,17 @@ export function CategoryList({ categories }: { categories: CatalogCategory[] }) 
   const handleDelete = async (id: number) => {
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/admin/categories/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/categories/${id}`, {
+        method: "DELETE",
+      });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
         // D-14: Python's product-reference guard returns 400 with a message.
         // Surface it to the admin so they know why the delete was blocked.
-        toast.error(body?.error ?? "Erro ao excluir categoria. Tente novamente mais tarde.");
+        toast.error(
+          body?.error ??
+            "Erro ao excluir categoria. Tente novamente mais tarde.",
+        );
         return;
       }
       toast.success("Categoria excluída com sucesso.");
@@ -70,7 +79,10 @@ export function CategoryList({ categories }: { categories: CatalogCategory[] }) 
       });
       if (!res.ok) {
         const body = await res.json().catch(() => null);
-        toast.error(body?.error ?? "Erro ao reordenar categorias. Tente novamente mais tarde.");
+        toast.error(
+          body?.error ??
+            "Erro ao reordenar categorias. Tente novamente mais tarde.",
+        );
         return;
       }
       startTransition(() => router.refresh());
@@ -112,7 +124,10 @@ export function CategoryList({ categories }: { categories: CatalogCategory[] }) 
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6"
-                  disabled={index === categories.length - 1 || reorderingId === category.id}
+                  disabled={
+                    index === categories.length - 1 ||
+                    reorderingId === category.id
+                  }
                   onClick={() => handleReorder(category.id, "down")}
                 >
                   <ChevronDown className="size-4" />
@@ -137,7 +152,9 @@ export function CategoryList({ categories }: { categories: CatalogCategory[] }) 
                 <span className="text-muted-foreground">-</span>
               )}
             </TableCell>
-            <TableCell className="text-center">{category.productCount ?? 0}</TableCell>
+            <TableCell className="text-center">
+              {category.productCount ?? 0}
+            </TableCell>
             <TableCell className="text-right">
               <div className="flex items-center justify-end gap-2">
                 <Button asChild variant="outline" size="sm">
@@ -162,8 +179,8 @@ export function CategoryList({ categories }: { categories: CatalogCategory[] }) 
                     <AlertDialogHeader>
                       <AlertDialogTitle>Excluir categoria</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Excluir categoria: Produtos desta categoria não serão removidos.
-                        Confirmar exclusão?
+                        Excluir categoria: Produtos desta categoria não serão
+                        removidos. Confirmar exclusão?
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

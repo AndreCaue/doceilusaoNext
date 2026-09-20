@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
@@ -27,7 +28,9 @@ export const AnimatedSymbols = ({ hide }: TAnimatedSymbols) => (
       <motion.span
         key={symbol}
         className={cn(
-          symbol === "♦" || symbol === "♥" ? "text-red-500/60" : "text-black/60",
+          symbol === "♦" || symbol === "♥"
+            ? "text-red-500/60"
+            : "text-black/60",
         )}
         variants={{
           hidden: { opacity: 0, y: 8 },

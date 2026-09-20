@@ -16,6 +16,8 @@
 //   * The SPA CardContainer's stray "A" glyph before the mini icon is a
 //     typo in the SPA — deliberately not ported.
 
+import React from "react";
+
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Club, Diamond, Heart, Spade, type LucideIcon } from "lucide-react";
@@ -70,7 +72,9 @@ export default function HomePage() {
                   size={28}
                   strokeWidth={1.5}
                   className={
-                    red ? "fill-[#FF0000] text-[#FF0000]" : "fill-white text-white"
+                    red
+                      ? "fill-[#FF0000] text-[#FF0000]"
+                      : "fill-white text-white"
                   }
                 />
                 {name}
@@ -91,7 +95,9 @@ export default function HomePage() {
                   size={28}
                   strokeWidth={1.5}
                   className={
-                    red ? "fill-[#FF0000] text-[#FF0000]" : "fill-white text-white"
+                    red
+                      ? "fill-[#FF0000] text-[#FF0000]"
+                      : "fill-white text-white"
                   }
                 />
                 {name}

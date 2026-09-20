@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Topbar } from "@/components/topbar/Topbar";
 import { AppSidebar } from "@/components/shop/Sidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";

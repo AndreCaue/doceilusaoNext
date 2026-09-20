@@ -19,6 +19,7 @@
 // seconds-remaining from the query: the countdown receives the absolute ISO
 // computed from Date.now() + expires_at.
 
+import React from "react";
 import { useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -111,7 +112,9 @@ const OrderDetail = ({ order }: OrderDetailProps) => {
           <h2 className="text-lg font-semibold text-slate-200 font-[Poppins]">
             Detalhes do pedido
           </h2>
-          <p className="font-mono text-sm text-muted-foreground">{order.uuid}</p>
+          <p className="font-mono text-sm text-muted-foreground">
+            {order.uuid}
+          </p>
         </div>
         <OrdersStatusBadge status={order.status} />
         <div className="text-right">

@@ -14,6 +14,7 @@
 // "Ver pedido" CTA to /pedidos/<uuid> when the redirect is /checkout/<uuid>
 // (pix-unpaid / generic reservations). redirect "/" (card / paid-pix) → no CTA.
 
+import React from "react";
 import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
 

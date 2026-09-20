@@ -9,6 +9,7 @@
 // Tabs: "pix" | "card" (D-15 / D-20 / D-22). A PAID order (page refresh after
 // confirmation) never re-exposes the payment forms — double-charge guard.
 
+import React from "react";
 import { useState } from "react";
 import type { JSX } from "react";
 import { CheckCircle2, CreditCard, QrCode } from "lucide-react";
@@ -20,7 +21,11 @@ import type { OrderConfirmationData } from "./types";
 
 type PaymentMethod = "pix" | "card";
 
-export function PaymentTabs({ order }: { order: OrderConfirmationData }): JSX.Element {
+export function PaymentTabs({
+  order,
+}: {
+  order: OrderConfirmationData;
+}): JSX.Element {
   const [method, setMethod] = useState<PaymentMethod>("pix");
 
   // PAY-04/PAY-05 — already-paid orders show a confirmation surface, never the

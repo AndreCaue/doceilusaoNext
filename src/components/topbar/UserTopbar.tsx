@@ -6,6 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import React from "react";
 import { cn } from "@/lib/utils";
 import { User2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";

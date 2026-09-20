@@ -17,6 +17,7 @@
 // client never imports prisma-bound server types (next/prisma cannot be
 // bundled into a client component).
 
+import React from "react";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -27,12 +28,7 @@ import {
   useReactTable,
   type ColumnDef,
 } from "@tanstack/react-table";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Package,
-  RefreshCcw,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Package, RefreshCcw } from "lucide-react";
 import { OrdersStatusBadge } from "./OrdersStatusBadge";
 
 // Wire shape of GET /api/orders/list → { orders: OrderListItem[] } (30-03 contract).
@@ -49,7 +45,10 @@ type OrderListItem = {
 
 const PAGE_SIZES = [5, 10, 20] as const;
 
-const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+const brl = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+});
 
 /** Explicit dd/mm/yyyy — no toLocaleDateString (intl-dependent output would
  *  drift across ICU versions). Null/NaN → "—". */
@@ -84,10 +83,13 @@ export function OrdersTable({ userId }: { userId: number }) {
       setLoading(true);
       setError(false);
       try {
-        const res = await fetch("/api/orders/list", { credentials: "same-origin" });
+        const res = await fetch("/api/orders/list", {
+          credentials: "same-origin",
+        });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = (await res.json()) as { orders?: OrderListItem[] };
-        if (!cancelled) setOrders(Array.isArray(data.orders) ? data.orders : []);
+        if (!cancelled)
+          setOrders(Array.isArray(data.orders) ? data.orders : []);
       } catch {
         if (!cancelled) setError(true);
       } finally {
@@ -107,7 +109,9 @@ export function OrdersTable({ userId }: { userId: number }) {
         accessorFn: (row) => row.short_id,
         header: "PEDIDO",
         cell: ({ getValue }) => (
-          <span className="font-mono text-xs text-white/80">{getValue<string>()}</span>
+          <span className="font-mono text-xs text-white/80">
+            {getValue<string>()}
+          </span>
         ),
       },
       {
@@ -115,21 +119,27 @@ export function OrdersTable({ userId }: { userId: number }) {
         accessorFn: (row) => row.created_at,
         header: "DATA",
         cell: ({ getValue }) => (
-          <span className="font-mono text-xs text-white/40">{formatDate(getValue<string | null>())}</span>
+          <span className="font-mono text-xs text-white/40">
+            {formatDate(getValue<string | null>())}
+          </span>
         ),
       },
       {
         id: "status",
         accessorFn: (row) => row.status,
         header: "STATUS",
-        cell: ({ getValue }) => <OrdersStatusBadge status={getValue<string | null>()} />,
+        cell: ({ getValue }) => (
+          <OrdersStatusBadge status={getValue<string | null>()} />
+        ),
       },
       {
         id: "items",
         accessorFn: (row) => row.items,
         header: "ITENS",
         cell: ({ getValue }) => (
-          <span className="font-mono text-xs text-white/40">{itemsSummary(getValue<OrderListItem["items"]>())}</span>
+          <span className="font-mono text-xs text-white/40">
+            {itemsSummary(getValue<OrderListItem["items"]>())}
+          </span>
         ),
       },
       {
@@ -163,9 +173,16 @@ export function OrdersTable({ userId }: { userId: number }) {
     return (
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
         {[0, 1, 2, 3, 4].map((i) => (
-          <div key={i} className={`${gridCols} grid gap-4 border-b border-white/[0.06] px-6 py-4 last:border-b-0`}>
+          <div
+            key={i}
+            className={`${gridCols} grid gap-4 border-b border-white/[0.06] px-6 py-4 last:border-b-0`}
+          >
             {[24, 32, 28, 40, 32].map((w, j) => (
-              <div key={j} className="h-4 animate-pulse rounded bg-white/[0.06]" style={{ width: `${w * 3}px` }} />
+              <div
+                key={j}
+                className="h-4 animate-pulse rounded bg-white/[0.06]"
+                style={{ width: `${w * 3}px` }}
+              />
             ))}
           </div>
         ))}
@@ -176,7 +193,9 @@ export function OrdersTable({ userId }: { userId: number }) {
   if (error) {
     return (
       <div className="flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-16">
-        <p className="font-mono text-sm text-white/60">Não foi possível carregar seus pedidos.</p>
+        <p className="font-mono text-sm text-white/60">
+          Não foi possível carregar seus pedidos.
+        </p>
         <button
           type="button"
           onClick={() => setReloadKey((k) => k + 1)}
@@ -192,7 +211,9 @@ export function OrdersTable({ userId }: { userId: number }) {
     return (
       <div className="flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-16">
         <Package size={32} className="text-white/25" />
-        <p className="font-mono text-sm text-white/60">Você ainda não tem pedidos</p>
+        <p className="font-mono text-sm text-white/60">
+          Você ainda não tem pedidos
+        </p>
         <Link
           href="/loja"
           className="rounded-lg border border-violet-400/30 bg-violet-400/10 px-4 py-2 font-mono text-xs text-violet-300 transition-colors hover:bg-violet-400/20"
@@ -210,15 +231,22 @@ export function OrdersTable({ userId }: { userId: number }) {
       className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
     >
       {/* header */}
-      <div className={`${gridCols} grid gap-4 border-b border-white/10 bg-white/[0.03] px-6 py-3`}>
+      <div
+        className={`${gridCols} grid gap-4 border-b border-white/10 bg-white/[0.03] px-6 py-3`}
+      >
         {table.getHeaderGroups().map((headerGroup) =>
           headerGroup.headers.map((header) => (
-            <div key={header.id} className="font-mono text-[10px] tracking-[0.2em] text-white/35">
+            <div
+              key={header.id}
+              className="font-mono text-[10px] tracking-[0.2em] text-white/35"
+            >
               {flexRender(header.column.columnDef.header, header.getContext())}
             </div>
           )),
         )}
-        <div className="font-mono text-[10px] tracking-[0.2em] text-white/35">AÇÕES</div>
+        <div className="font-mono text-[10px] tracking-[0.2em] text-white/35">
+          AÇÕES
+        </div>
       </div>
 
       {/* rows */}
@@ -272,7 +300,9 @@ export function OrdersTable({ userId }: { userId: number }) {
       {/* pagination footer */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-white/[0.03] px-6 py-3">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] tracking-[0.2em] text-white/35">POR PÁGINA</span>
+          <span className="font-mono text-[10px] tracking-[0.2em] text-white/35">
+            POR PÁGINA
+          </span>
           <select
             aria-label="Itens por página"
             value={table.getState().pagination.pageSize}
@@ -289,7 +319,8 @@ export function OrdersTable({ userId }: { userId: number }) {
 
         <div className="flex items-center gap-4">
           <span className="font-mono text-[10px] tracking-[0.2em] text-white/35">
-            PÁGINA {table.getState().pagination.pageIndex + 1} DE {table.getPageCount()}
+            PÁGINA {table.getState().pagination.pageIndex + 1} DE{" "}
+            {table.getPageCount()}
           </span>
           <div className="flex items-center gap-2">
             <button

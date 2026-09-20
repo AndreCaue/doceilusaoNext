@@ -9,6 +9,7 @@
 // Master scoping: this form lives under the (admin) layout gate (D-15), and every
 // target API route re-verifies master scope server-side (T-27-07-01).
 
+import React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -78,7 +79,8 @@ export function CategoryForm({ mode, seed }: TCategoryForm) {
       if (!res.ok) {
         const body = await res.json().catch(() => null);
         toast.error(
-          body?.error ?? "Erro ao salvar categoria. Tente novamente mais tarde.",
+          body?.error ??
+            "Erro ao salvar categoria. Tente novamente mais tarde.",
         );
         return;
       }

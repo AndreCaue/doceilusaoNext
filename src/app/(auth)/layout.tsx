@@ -9,6 +9,7 @@
 // treatment (the SPA auth screens' gradient mark + name), PT-BR copy only.
 // No metadata here — pages set their own title (client pages set
 // document.title; nothing conflicts with the root layout's defaults).
+import React from "react";
 
 const BRAND_GRADIENT =
   "linear-gradient(45deg, #f9f6ec, #88a1a8, #502940, #790614, #0d0c0c)";

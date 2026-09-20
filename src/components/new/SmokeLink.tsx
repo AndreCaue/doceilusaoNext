@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { cn } from "@/lib/utils";
 import { motion, useAnimation, type Variants } from "framer-motion";
 

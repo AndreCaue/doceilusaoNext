@@ -9,6 +9,7 @@
 //     router.refresh() (revalidate parity, Phase 27 WR-05)
 //   - T-25-03: this component never logs/emits the txid key or QR payload.
 
+import React from "react";
 import { useCallback, useEffect, useState } from "react";
 import type { JSX } from "react";
 import { useRouter } from "next/navigation";
@@ -29,7 +30,11 @@ const POLL_INTERVAL_MS = 5000; // D-15
 const COPY_RESET_MS = 2200; // parity PixPayment.tsx
 const PAYMENT_TERMINAL_STATUSES = new Set(["EXPIRED", "CANCELED", "FAILED"]);
 
-export function PixPanel({ order }: { order: OrderConfirmationData }): JSX.Element {
+export function PixPanel({
+  order,
+}: {
+  order: OrderConfirmationData;
+}): JSX.Element {
   const router = useRouter();
   const [charge, setCharge] = useState<PixChargeResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,14 +82,17 @@ export function PixPanel({ order }: { order: OrderConfirmationData }): JSX.Eleme
     const timer = setInterval(async () => {
       try {
         const res = await fetch(`/api/payment/pix/${encodeURIComponent(txid)}`);
-        const data = (await res.json().catch(() => null)) as
-          | { status?: string; error?: string }
-          | null;
+        const data = (await res.json().catch(() => null)) as {
+          status?: string;
+          error?: string;
+        } | null;
 
         if (!res.ok) {
           if (res.status >= 400 && res.status < 500) {
             clearInterval(timer); // terminal — charge gone / auth lost
-            toast.error(data?.error ?? "Não foi possível verificar o pagamento");
+            toast.error(
+              data?.error ?? "Não foi possível verificar o pagamento",
+            );
           }
           return; // 5xx → keep polling (D-15 retryable)
         }

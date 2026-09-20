@@ -10,6 +10,7 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
+import React from "react";
 
 import { DisplayBackground } from "@/components/shop/DisplayBackground";
 import { DisplayHeader } from "@/components/shop/DisplayHeader";

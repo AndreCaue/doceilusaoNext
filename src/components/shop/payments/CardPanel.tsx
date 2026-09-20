@@ -12,6 +12,7 @@
 //     orderData.user.recipient_document).
 //   - T-25-03: no log/emit of card data anywhere in this component.
 
+import React from "react";
 import { useCallback, useState } from "react";
 import type { JSX } from "react";
 import { useRouter } from "next/navigation";
@@ -42,7 +43,12 @@ type InstallmentOption = {
   has_interest: boolean;
 };
 
-type CardFields = "numero_cartao" | "nome_titular" | "validade" | "cvv" | "parcelas";
+type CardFields =
+  | "numero_cartao"
+  | "nome_titular"
+  | "validade"
+  | "cvv"
+  | "parcelas";
 type FormErrors = Partial<Record<CardFields, string>>;
 
 /** Parity Frontend/src/Pages/Checkout/utils.ts detectCardBrand. */
@@ -61,10 +67,16 @@ function detectCardBrand(cardNumber: string): string {
 /** MM/AA auto-format (parity formatExpiry). */
 function formatExpiry(value: string): string {
   const digits = value.replace(/\D/g, "").slice(0, 4);
-  return digits.length < 2 ? digits : `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return digits.length < 2
+    ? digits
+    : `${digits.slice(0, 2)}/${digits.slice(2)}`;
 }
 
-export function CardPanel({ order }: { order: OrderConfirmationData }): JSX.Element {
+export function CardPanel({
+  order,
+}: {
+  order: OrderConfirmationData;
+}): JSX.Element {
   const router = useRouter();
   const [cardNumber, setCardNumber] = useState("");
   const [holderName, setHolderName] = useState("");
@@ -92,7 +104,8 @@ export function CardPanel({ order }: { order: OrderConfirmationData }): JSX.Elem
       /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/.test(name) &&
       nameParts.length >= 2 &&
       !nameParts.every((part) => new Set(part.toLowerCase()).size === 1);
-    if (!nameOk) next.nome_titular = "Informe o nome completo como está no cartão";
+    if (!nameOk)
+      next.nome_titular = "Informe o nome completo como está no cartão";
 
     const match = /^(\d{2})\/(\d{2})$/.exec(expiry);
     let expiryOk = false;
@@ -105,14 +118,16 @@ export function CardPanel({ order }: { order: OrderConfirmationData }): JSX.Elem
       expiryOk =
         month >= 1 &&
         month <= 12 &&
-        (year > currentYear || (year === currentYear && month >= currentMonth)) &&
+        (year > currentYear ||
+          (year === currentYear && month >= currentMonth)) &&
         year <= currentYear + 20;
     }
     if (!expiryOk) next.validade = "Data de validade do cartão inválida";
 
     if (!cvv || cvv.replace(/\D/g, "").length < 3) next.cvv = "CVV inválido";
 
-    if (!parcelas || parcelas < 1) next.parcelas = "Selecione o número de parcelas";
+    if (!parcelas || parcelas < 1)
+      next.parcelas = "Selecione o número de parcelas";
 
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -131,9 +146,10 @@ export function CardPanel({ order }: { order: OrderConfirmationData }): JSX.Elem
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ brand: detected, total: order.total ?? 0 }),
       });
-      const data = (await res.json().catch(() => null)) as
-        | { installments?: InstallmentOption[]; error?: string }
-        | null;
+      const data = (await res.json().catch(() => null)) as {
+        installments?: InstallmentOption[];
+        error?: string;
+      } | null;
       if (!res.ok) {
         toast.error(data?.error ?? "Não foi possível carregar as parcelas");
         return;
@@ -163,7 +179,9 @@ export function CardPanel({ order }: { order: OrderConfirmationData }): JSX.Elem
     const cpf = order.shipping?.recipient_document ?? "";
 
     if (!TOKENIZATION_CONFIGURED) {
-      toast.error("Pagamento via cartão temporariamente indisponível para esta loja");
+      toast.error(
+        "Pagamento via cartão temporariamente indisponível para esta loja",
+      );
       return null;
     }
     if (!cpf) {
@@ -221,9 +239,10 @@ export function CardPanel({ order }: { order: OrderConfirmationData }): JSX.Elem
           parcelas: parcelas ?? 1,
         }),
       });
-      const data = (await res.json().catch(() => null)) as
-        | { status?: string; error?: string }
-        | null;
+      const data = (await res.json().catch(() => null)) as {
+        status?: string;
+        error?: string;
+      } | null;
 
       if (res.ok) {
         if (data?.status === "PAID") {
@@ -359,8 +378,12 @@ export function CardPanel({ order }: { order: OrderConfirmationData }): JSX.Elem
           </SelectTrigger>
           <SelectContent>
             {installments.map((option) => (
-              <SelectItem key={option.installment} value={String(option.installment)}>
-                {option.installment}x de R$ {option.installment_value.toFixed(2)}
+              <SelectItem
+                key={option.installment}
+                value={String(option.installment)}
+              >
+                {option.installment}x de R${" "}
+                {option.installment_value.toFixed(2)}
                 {option.has_interest
                   ? ` - Juros de R$ ${(option.total_value - (order.total ?? 0)).toFixed(2)}`
                   : " - Sem juros"}

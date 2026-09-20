@@ -1,5 +1,7 @@
 // Prev/next + page-number pagination for the public store listing.
 // Presentational component — uses <a> tags so page state stays URL-driven (D-05: ?page={n}).
+
+import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 

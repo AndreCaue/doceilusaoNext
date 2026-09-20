@@ -8,7 +8,7 @@
 //
 // Master scoping: this form lives under the (admin) layout gate (D-15), and every
 // target API route re-verifies master scope server-side (T-27-06-01/02/03).
-
+import React from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -19,7 +19,10 @@ import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { InputForm } from "@/components/new/InputForm";
-import { DropdownForm, type IDropdownOption } from "@/components/new/DropdownForm";
+import {
+  DropdownForm,
+  type IDropdownOption,
+} from "@/components/new/DropdownForm";
 import { UploadImage } from "@/components/new/Dropzone";
 import type { CatalogProduct } from "@/lib/types/catalog";
 
@@ -41,8 +44,14 @@ const formSchema = z.object({
       url: z.string().url("URL inválida"),
       file: z
         .instanceof(File, { message: "Deve ser um arquivo válido" })
-        .refine((file) => file.size <= 5 * 1024 * 1024, "Arquivo muito grande (máx. 5MB)")
-        .refine((file) => file.type.startsWith("image/"), "Apenas arquivos de imagem são permitidos"),
+        .refine(
+          (file) => file.size <= 5 * 1024 * 1024,
+          "Arquivo muito grande (máx. 5MB)",
+        )
+        .refine(
+          (file) => file.type.startsWith("image/"),
+          "Apenas arquivos de imagem são permitidos",
+        ),
     }),
   ) as z.ZodType<{ name: string; url: string; file: File }[]>,
 });
@@ -103,10 +112,11 @@ export function ProductForm({ mode, seed }: TProductForm) {
       ]);
 
       if (catRes.ok) {
-        const data = (await catRes.json()) as { id: number; descricao: string }[];
-        setCategories(
-          data.map((c) => ({ value: c.id, text: c.descricao })),
-        );
+        const data = (await catRes.json()) as {
+          id: number;
+          descricao: string;
+        }[];
+        setCategories(data.map((c) => ({ value: c.id, text: c.descricao })));
       }
       if (presetRes.ok) {
         const data = (await presetRes.json()) as { id: number; name: string }[];
@@ -122,7 +132,6 @@ export function ProductForm({ mode, seed }: TProductForm) {
   useEffect(() => {
     setIsLoading(true);
     loadDropdowns();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // handleChangePresets (ported from SPA BaralhoForm): on preset select, fetch the
@@ -215,7 +224,10 @@ export function ProductForm({ mode, seed }: TProductForm) {
       }
     }
 
-    const url = mode === "edit" && seed ? `/api/admin/products/${seed.id}` : "/api/admin/products";
+    const url =
+      mode === "edit" && seed
+        ? `/api/admin/products/${seed.id}`
+        : "/api/admin/products";
     const method = mode === "edit" ? "PUT" : "POST";
 
     try {
@@ -227,7 +239,9 @@ export function ProductForm({ mode, seed }: TProductForm) {
 
       if (!res.ok) {
         const body = await res.json().catch(() => null);
-        toast.error(body?.error ?? "Erro ao salvar o produto. Tente novamente.");
+        toast.error(
+          body?.error ?? "Erro ao salvar o produto. Tente novamente.",
+        );
         return;
       }
 
@@ -242,7 +256,11 @@ export function ProductForm({ mode, seed }: TProductForm) {
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit, () => toast.error("Preencha todos os campos obrigatórios."))}>
+      <form
+        onSubmit={handleSubmit(onSubmit, () =>
+          toast.error("Preencha todos os campos obrigatórios."),
+        )}
+      >
         <div className="flex flex-col gap-4">
           <UploadImage
             name="images_urls"
@@ -264,8 +282,11 @@ export function ProductForm({ mode, seed }: TProductForm) {
                       key={index}
                       className="relative flex flex-col items-center p-2 border border-gray-600 rounded-lg bg-gray-800"
                     >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={url} alt={`Imagem ${index + 1}`} className="h-16 w-16 object-cover rounded" />
+                      <img
+                        src={url}
+                        alt={`Imagem ${index + 1}`}
+                        className="h-16 w-16 object-cover rounded"
+                      />
                       <button
                         type="button"
                         onClick={() => removeExistingImage(index)}

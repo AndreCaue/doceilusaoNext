@@ -10,6 +10,8 @@
 // consumed by 30-07 — divergence between the two is impossible by construction.
 // Dependency-free on purpose (no TanStack import → usable from Server Components).
 
+import React from "react";
+
 type StatusConfig = {
   label: string;
   color: string; // tailwind pill classes: text-X bg-X/10 (border uses white/10)
@@ -19,7 +21,10 @@ type StatusConfig = {
 export const STATUS_CONFIG: Record<string, StatusConfig> = {
   PENDING: { label: "Pendente", color: "text-amber-400 bg-amber-400/10" },
   CONFIRMED: { label: "Pago", color: "text-emerald-400 bg-emerald-400/10" },
-  PROCESSING: { label: "Preparação para envio", color: "text-blue-400 bg-blue-400/10" },
+  PROCESSING: {
+    label: "Preparação para envio",
+    color: "text-blue-400 bg-blue-400/10",
+  },
   SHIPPED: { label: "Em trânsito", color: "text-sky-400 bg-sky-400/10" },
   DELIVERED: { label: "Entregue", color: "text-emerald-400 bg-emerald-400/10" },
   CANCELED: { label: "Cancelado", color: "text-red-400 bg-red-400/10" },
@@ -31,7 +36,10 @@ export const STATUS_CONFIG: Record<string, StatusConfig> = {
   DISPUTED: { label: "Disputa", color: "text-gray-400 bg-gray-400/10" },
 };
 
-const NEUTRAL: StatusConfig = { label: "—", color: "text-gray-400 bg-gray-400/10" };
+const NEUTRAL: StatusConfig = {
+  label: "—",
+  color: "text-gray-400 bg-gray-400/10",
+};
 
 export function OrdersStatusBadge({ status }: { status: string | null }) {
   const cfg = status ? (STATUS_CONFIG[status] ?? NEUTRAL) : NEUTRAL;

@@ -48,16 +48,21 @@ vi.mock("next/image", () => {
       alt?: string;
       unoptimized?: boolean;
       fill?: boolean;
-    }) =>
-      React.createElement("img", { src, alt, ...rest }),
+    }) => React.createElement("img", { src, alt, ...rest }),
   };
 });
 
 vi.mock("next/link", () => {
   const React = require("react") as typeof import("react");
   return {
-    default: ({ href, children, ...rest }: { href: string; children?: React.ReactNode }) =>
-      React.createElement("a", { href, ...rest }, children),
+    default: ({
+      href,
+      children,
+      ...rest
+    }: {
+      href: string;
+      children?: React.ReactNode;
+    }) => React.createElement("a", { href, ...rest }, children),
   };
 });
 
@@ -145,7 +150,10 @@ function makeOrder(over: Partial<OrderFixture> & { id: string }): OrderFixture {
     shipping_delivery_days: 7,
     expires_at: null,
     total: 190.8,
-    user: { recipient_name: "Maria Silva", recipient_document: "123.456.789-00" },
+    user: {
+      recipient_name: "Maria Silva",
+      recipient_document: "123.456.789-00",
+    },
     items: [
       {
         product_id: 1,
@@ -182,7 +190,8 @@ function makeOrder(over: Partial<OrderFixture> & { id: string }): OrderFixture {
     },
     tracking: {
       tracking_code: "BR123456789BR",
-      tracking_url: "https://www2.correios.com.br/sistemas/rastreamento/?P=BR123456789BR",
+      tracking_url:
+        "https://www2.correios.com.br/sistemas/rastreamento/?P=BR123456789BR",
       shipping_company: "Correios",
       shipping_status: "delivered",
       status_label: "Entregue",
@@ -260,7 +269,9 @@ describe("OrderDetail", () => {
 
     expect(screen.getByText("Maria Silva")).toBeInTheDocument();
     expect(screen.getByText("123.456.789-00")).toBeInTheDocument();
-    expect(screen.getByText("Rua das Flores, 123 — Apto 45")).toBeInTheDocument();
+    expect(
+      screen.getByText("Rua das Flores, 123 — Apto 45"),
+    ).toBeInTheDocument();
     expect(screen.getByText("Centro")).toBeInTheDocument();
     expect(screen.getByText("São Paulo — SP")).toBeInTheDocument();
     expect(screen.getByText("CEP: 01310-100")).toBeInTheDocument(); // CEP formatted
@@ -274,7 +285,9 @@ describe("OrderDetail", () => {
         order={makeOrder({
           id: "33333333-aaaa-4b6c-9f8d-333333333333",
           shipping_full: {
-            ...(ORDER.shipping_full as NonNullable<OrderFixture["shipping_full"]>),
+            ...(ORDER.shipping_full as NonNullable<
+              OrderFixture["shipping_full"]
+            >),
             complement: null,
           },
         })}
@@ -285,7 +298,10 @@ describe("OrderDetail", () => {
 
     render(
       <OrderDetail
-        order={makeOrder({ id: "44444444-aaaa-4b6c-9f8d-444444444444", shipping_full: null })}
+        order={makeOrder({
+          id: "44444444-aaaa-4b6c-9f8d-444444444444",
+          shipping_full: null,
+        })}
       />,
     );
     expect(screen.getByText("Sem endereço")).toBeInTheDocument();
@@ -301,7 +317,10 @@ describe("OrderDetail", () => {
   it("maps payment status REFUNDED → Estornado", () => {
     render(
       <OrderDetail
-        order={makeOrder({ id: "55555555-aaaa-4b6c-9f8d-555555555555", payment_status: "REFUNDED" })}
+        order={makeOrder({
+          id: "55555555-aaaa-4b6c-9f8d-555555555555",
+          payment_status: "REFUNDED",
+        })}
       />,
     );
 
@@ -345,36 +364,55 @@ describe("OrderDetail", () => {
     );
     expect(screen.getByText(/Status: Postado/)).toBeInTheDocument();
     expect(screen.queryByTestId("tracking-timeline")).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Acompanhar entrega" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Acompanhar entrega" }),
+    ).not.toBeInTheDocument();
 
     // tracking null (D-04 render gating): muted copy, no timeline, no link
     render(
       <OrderDetail
-        order={makeOrder({ id: "77777777-aaaa-4b6c-9f8d-777777777777", tracking: null })}
+        order={makeOrder({
+          id: "77777777-aaaa-4b6c-9f8d-777777777777",
+          tracking: null,
+        })}
       />,
     );
     expect(screen.getByText("Sem informações de rastreio")).toBeInTheDocument();
     expect(screen.queryByTestId("tracking-timeline")).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Acompanhar entrega" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Acompanhar entrega" }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders the expired banner instead of the countdown for expired PENDING orders", () => {
     render(
       <OrderDetail
-        order={makeOrder({ id: "88888888-aaaa-4b6c-9f8d-888888888888", status: "PENDING", expired: true, expires_at: 0 })}
+        order={makeOrder({
+          id: "88888888-aaaa-4b6c-9f8d-888888888888",
+          status: "PENDING",
+          expired: true,
+          expires_at: 0,
+        })}
       />,
     );
 
     expect(
       screen.getByText("Este pedido venceu por falta de pagamento"),
     ).toBeInTheDocument();
-    expect(screen.queryByTestId("reservation-countdown")).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("reservation-countdown"),
+    ).not.toBeInTheDocument();
   });
 
   it("renders the ReservationCountdown for PENDING orders that are not expired", () => {
     render(
       <OrderDetail
-        order={makeOrder({ id: "99999999-aaaa-4b6c-9f8d-999999999999", status: "PENDING", expired: false, expires_at: 7200 })}
+        order={makeOrder({
+          id: "99999999-aaaa-4b6c-9f8d-999999999999",
+          status: "PENDING",
+          expired: false,
+          expires_at: 7200,
+        })}
       />,
     );
 

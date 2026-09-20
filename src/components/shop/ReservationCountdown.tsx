@@ -6,7 +6,7 @@
 //
 // Props are serialized ISO strings from the Server Component — no Date objects
 // cross the client boundary.
-
+import React from "react";
 import { useEffect, useState, useCallback } from "react";
 
 // `expiresAt` receives the serialized `reservation_expires_at` ISO string from
@@ -17,7 +17,11 @@ type ReservationCountdownProps = {
   onExpired?: () => void;
 };
 
-function formatCountdown(ms: number): { hours: number; minutes: number; seconds: number } {
+function formatCountdown(ms: number): {
+  hours: number;
+  minutes: number;
+  seconds: number;
+} {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);

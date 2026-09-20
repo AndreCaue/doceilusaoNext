@@ -1,6 +1,7 @@
 // Server-friendly category tab bar for the public store listing.
 // Presentational component — no data fetching. Renders linked tabs (<a>) so
 // navigation stays URL-driven (D-04: ?category={name}), strangler-fig compatible.
+import React from "react";
 import { cn } from "@/lib/utils";
 import { categoryStyles } from "./helper";
 import type { CatalogCategory } from "@/lib/types/catalog";
@@ -11,10 +12,7 @@ type TCategoryTabs = {
   activeCategory: string | null;
 };
 
-export const CategoryTabs = ({
-  categories,
-  activeCategory,
-}: TCategoryTabs) => {
+export const CategoryTabs = ({ categories, activeCategory }: TCategoryTabs) => {
   const isActive = (name: string) => activeCategory === name;
 
   return (

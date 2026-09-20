@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ShoppingCart, CreditCard, Info } from "lucide-react";
@@ -27,7 +28,8 @@ type TProductDetail = {
 export const ProductDetail = ({ product }: TProductDetail) => {
   const [quantity, setQuantity] = useState<number>(1);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { addItem, buyNow, summary, loading, removeItem, updateItem } = useCart();
+  const { addItem, buyNow, summary, loading, removeItem, updateItem } =
+    useCart();
   const { isGuest } = useAuth();
   const router = useRouter();
 

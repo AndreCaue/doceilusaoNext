@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ShoppingCartIcon } from "lucide-react";
 import { LogoTopbar } from "./LogoTopbar";

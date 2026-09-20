@@ -8,6 +8,7 @@ import { Pagination } from "@/components/shop/Pagination";
 import { DisplayBackground } from "@/components/shop/DisplayBackground";
 import { DisplayHeader } from "@/components/shop/DisplayHeader";
 import { DisplayFooter } from "@/components/shop/DisplayFooter";
+import React from "react";
 
 type TSearchParams = {
   category?: string;
@@ -51,7 +52,10 @@ export default async function LojaPage({
       <div className="relative min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800 overflow-hidden">
         <DisplayBackground />
         <div className="relative z-10 pt-12 pb-16 max-w-6xl mx-auto px-4 md:px-6">
-          <DisplayHeader title="Loja" subTitle="Explore a nossa coleção exclusiva de produtos de ilusão" />
+          <DisplayHeader
+            title="Loja"
+            subTitle="Explore a nossa coleção exclusiva de produtos de ilusão"
+          />
           <section className="py-24 md:py-32">
             <div className="max-w-6xl mx-auto px-6 text-center">
               <h2 className="text-3xl md:text-4xl font-light tracking-widest text-white/90">
@@ -74,13 +78,20 @@ export default async function LojaPage({
       <DisplayBackground />
 
       <div className="relative z-10 pt-12 pb-16 max-w-6xl mx-auto px-4 md:px-6">
-        <DisplayHeader title="Loja" subTitle="Explore a nossa coleção exclusiva de produtos de ilusão" />
+        <DisplayHeader
+          title="Loja"
+          subTitle="Explore a nossa coleção exclusiva de produtos de ilusão"
+        />
 
         <CategoryTabs categories={categories} activeCategory={activeCategory} />
 
         <ProductListing category={activeCategory} page={page} />
 
-        <Pagination page={page} totalPages={result.totalPages} baseQuery={baseQuery} />
+        <Pagination
+          page={page}
+          totalPages={result.totalPages}
+          baseQuery={baseQuery}
+        />
 
         <DisplayFooter />
       </div>

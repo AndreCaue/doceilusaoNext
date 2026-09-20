@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+// @ts-expect-error Next.js processes global CSS imports at runtime.
 import "./globals.css";
+import React from "react";
 
 export const metadata: Metadata = {
   title: "Doce Ilusao",

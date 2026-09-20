@@ -2,6 +2,8 @@
 // Fetches products via the catalog module's Prisma reads (D-01) and renders the
 // ported ProductItem grid, plus exact UI-SPEC empty/error states.
 // Resilient — never crashes on a Prisma error (renders the error copy instead).
+
+import React from "react";
 import { listCatalogProducts } from "@/lib/catalog";
 import { ProductItem } from "./ProductItem";
 
@@ -12,10 +14,7 @@ type TProductListing = {
   page: number;
 };
 
-export const ProductListing = async ({
-  category,
-  page,
-}: TProductListing) => {
+export const ProductListing = async ({ category, page }: TProductListing) => {
   let items;
   try {
     const result = await listCatalogProducts({
