@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "verify:efi-cert": "node --env-file=.env.local scripts/verify-efi-cert.mjs",
+    "postinstall": "prisma generate",
     "test": "vitest run"
   },
   "dependencies": {
