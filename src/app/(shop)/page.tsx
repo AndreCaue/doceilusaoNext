@@ -44,14 +44,14 @@ const SUIT_CARDS: TSuitCard[] = [
   { name: "Livros", Icon: Club, red: false },
 ];
 
-const STORE_CATEGORIES = ["Tarot", "Velas", "Cristais"];
+const STORE_CATEGORIES = ["Baralho", "Acessórios", "Vídeos"]; // Devera vir do backend.
 
 export default function HomePage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800">
       <DisplayBackground />
 
-      <div className="relative z-10 mx-auto max-w-6xl px-4 pb-16 pt-24 md:px-6 md:pt-28">
+      <div className="relative z-10 mx-auto max-w-6xl px-4 pb-16 pt-28 md:px-6 ">
         <DisplayHeader
           title="Doce Ilusão"
           subTitle="Entre no universo da mágica: vídeos, baralhos, trukes e livros de ilusão para todos os níveis"
@@ -59,13 +59,13 @@ export default function HomePage() {
 
         {/* Hero carousel — suit category cards (SPA Home parity). Pure CSS
             scroll-snap (no client JS): swipe/scroll horizontally. */}
-        <div className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="grid grid-cols-2 md:flex snap-x snap-mandatory  gap-6 overflow-x-auto p-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {SUIT_CARDS.map(({ name, Icon, red }) => (
             <Link
               key={name}
               href="/loja"
               aria-label={`Ir para a loja — ${name}`}
-              className="group flex aspect-square w-[280px] shrink-0 snap-center flex-col items-center justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-gray-800/80 via-gray-700/60 to-gray-800/80 p-6 shadow-2xl backdrop-blur-sm transition-all duration-300 hover:-translate-y-2 hover:border-amber-300/50 hover:shadow-lg hover:shadow-amber-500/10 md:w-[320px]"
+              className="group flex aspect-square w-[200px] shrink-0 snap-center flex-col items-center justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-gray-800/80 via-gray-700/60 to-gray-800/80 p-6 shadow-2xl backdrop-blur-sm transition-all duration-300 hover:-translate-y-2 hover:border-amber-300/50 hover:shadow-lg hover:shadow-amber-500/10 md:w-[250px]"
             >
               <span className="flex w-full items-center gap-3 text-2xl font-semibold text-white">
                 <Icon
