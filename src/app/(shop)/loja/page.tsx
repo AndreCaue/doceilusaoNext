@@ -51,10 +51,10 @@ export default async function LojaPage({
     return (
       <div className="relative min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800 overflow-hidden">
         <DisplayBackground />
-        <div className="relative z-10 pt-12 pb-16 max-w-6xl mx-auto px-4 md:px-6">
+        <div className="relative z-10 pt-20 pb-16 max-w-6xl mx-auto px-4 md:px-6">
           <DisplayHeader
             title="Loja"
-            subTitle="Explore a nossa coleção exclusiva de produtos de ilusão"
+            subTitle="Explore a nossa coleção exclusiva de produtos"
           />
           <section className="py-24 md:py-32">
             <div className="max-w-6xl mx-auto px-6 text-center">
@@ -77,7 +77,7 @@ export default async function LojaPage({
     <div className="relative min-h-screen bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800 overflow-hidden">
       <DisplayBackground />
 
-      <div className="relative z-10 pt-12 pb-16 max-w-6xl mx-auto px-4 md:px-6">
+      <div className="relative z-10 py-24 max-w-6xl mx-auto px-4 md:px-6">
         <DisplayHeader
           title="Loja"
           subTitle="Explore a nossa coleção exclusiva de produtos de ilusão"
