@@ -25,6 +25,8 @@ import { Club, Diamond, Heart, Spade, type LucideIcon } from "lucide-react";
 import { DisplayBackground } from "@/components/shop/DisplayBackground";
 import { DisplayFooter } from "@/components/shop/DisplayFooter";
 import { DisplayHeader } from "@/components/shop/DisplayHeader";
+import { SuitCard } from "./components/home/SuitCard";
+import { StoreCategoryChips } from "./components/home/StoreCategoryChips";
 
 export const metadata: Metadata = {
   title: "Início | Doce Ilusão",
@@ -35,13 +37,14 @@ type TSuitCard = {
   Icon: LucideIcon;
   /** Red suits (♦ ♥) render #FF0000; black suits (♠ ♣) render white on the dark card. */
   red: boolean;
+  href: string;
 };
 
 const SUIT_CARDS: TSuitCard[] = [
-  { name: "Vídeos", Icon: Diamond, red: true },
-  { name: "Baralhos", Icon: Spade, red: false },
-  { name: "Trukes", Icon: Heart, red: true },
-  { name: "Livros", Icon: Club, red: false },
+  { name: "Vídeos", Icon: Diamond, red: true, href: "/videos" }, // verificar url
+  { name: "Baralhos", Icon: Spade, red: false, href: "/baralho" },
+  { name: "Trukes", Icon: Heart, red: true, href: "/trukes" },
+  { name: "Livros", Icon: Club, red: false, href: "/livros" },
 ];
 
 const STORE_CATEGORIES = ["Baralho", "Acessórios", "Vídeos"]; // Devera vir do backend.
@@ -59,7 +62,7 @@ export default function HomePage() {
 
         {/* Hero carousel — suit category cards (SPA Home parity). Pure CSS
             scroll-snap (no client JS): swipe/scroll horizontally. */}
-        <div className="grid grid-cols-2 md:flex snap-x snap-mandatory  gap-6 overflow-x-auto p-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {/* <div className="grid grid-cols-2 md:flex snap-x snap-mandatory  gap-6 overflow-x-auto p-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {SUIT_CARDS.map(({ name, Icon, red }) => (
             <Link
               key={name}
@@ -104,28 +107,31 @@ export default function HomePage() {
               </span>
             </Link>
           ))}
+        </div> */}
+        <div className="grid grid-cols-2 md:flex">
+          {SUIT_CARDS.map((card) => (
+            <SuitCard
+              key={card.name}
+              Icon={card.Icon}
+              name={card.name}
+              red={card.red}
+              href={card.href}
+            />
+          ))}
         </div>
 
         {/* CTA + real store categories with working ?category= deep links. */}
         <div className="mt-12 flex flex-col items-center gap-6">
           <Link
             href="/loja"
-            className="rounded-xl bg-gradient-to-r from-amber-400 to-amber-600 px-10 py-4 text-lg font-bold text-gray-900 shadow-xl shadow-amber-500/20 transition-all hover:brightness-110 active:scale-95"
+            className="rounded-xl bg-gradient-to-r from-gray-200 to-gray-700 px-10 py-4 text-lg font-bold text-gray-900 shadow-lg shadow-gray-900 transition-all hover:brightness-110 active:scale-95  hover:border-amber-300/50 hover:shadow-lg hover:shadow-amber-500/10"
           >
             Explorar a loja
           </Link>
 
           <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-gray-300">
             <span className="text-gray-400">Categorias:</span>
-            {STORE_CATEGORIES.map((cat) => (
-              <Link
-                key={cat}
-                href={`/loja?category=${encodeURIComponent(cat)}`}
-                className="rounded-full border border-white/15 bg-gray-800/50 px-4 py-1.5 font-medium backdrop-blur-sm transition-colors hover:border-amber-300/50 hover:text-amber-200"
-              >
-                {cat}
-              </Link>
-            ))}
+            <StoreCategoryChips categories={STORE_CATEGORIES} />
           </div>
         </div>
 
