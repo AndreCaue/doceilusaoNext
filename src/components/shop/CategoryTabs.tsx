@@ -21,9 +21,9 @@ export const CategoryTabs = ({ categories, activeCategory }: TCategoryTabs) => {
       <a
         href="/loja"
         className={cn(
-          "relative px-8 py-5 rounded-2xl font-bold text-lg transition-all",
+          "relative px-8 py-5 rounded-2xl font-bold text-lg transition-all brand-hover",
           activeCategory === null
-            ? "text-white shadow-2xl bg-gradient-to-r from-purple-600 to-fuchsia-700"
+            ? "text-white shadow-2xl bg-gradient-to-r from-gray-600 to-gray-800 border border-amber-300/50"
             : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 backdrop-blur-sm",
         )}
       >
@@ -32,7 +32,7 @@ export const CategoryTabs = ({ categories, activeCategory }: TCategoryTabs) => {
 
       {categories.map((cat) => {
         const style = categoryStyles[cat.name] || {
-          color: "from-gray-600 to-gray-800",
+          color: "from-gray-600 to-gray-800 border border-amber-300/50",
         };
         const active = isActive(cat.name);
         return (
@@ -40,9 +40,9 @@ export const CategoryTabs = ({ categories, activeCategory }: TCategoryTabs) => {
             key={cat.id}
             href={`?category=${encodeURIComponent(cat.name)}`}
             className={cn(
-              "relative px-8 py-5 rounded-2xl font-bold text-lg transition-all",
+              "relative px-8 py-5 rounded-2xl font-bold text-lg transition-all brand-hover",
               active
-                ? cn("text-white shadow-2xl bg-gradient-to-r", style.color)
+                ? cn("text-white shadow-2xl bg-gradient-to-r ", style.color)
                 : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 backdrop-blur-sm",
             )}
           >

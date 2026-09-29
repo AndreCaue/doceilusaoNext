@@ -6,8 +6,9 @@ export const topbarTab = [
 ];
 
 export const SmokeSubTab = [
-  { label: "Baralhos", link: "baralhos" },
-  { label: "Acessórios", link: "acessorios" },
+  { label: "Todos", link: "/" },
+  { label: "Baralhos", link: "?category=Baralhos" },
+  { label: "Acessórios", link: "?category=Acessorios" },
   // { label: "Trukes", link: "trukes" },
   // { label: "Marcas", link: "marcas" },
 ];

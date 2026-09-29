@@ -57,7 +57,7 @@ export const SmokeTabs = ({
           <SmokeLink
             textLabel={tab.label}
             background="light"
-            goTo={`loja/${tab.link}`}
+            goTo={`loja${tab.link}`}
             onClick={onClickCloseSubtab}
             key={tab.label}
           />

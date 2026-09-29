@@ -25,8 +25,8 @@ import { Club, Diamond, Heart, Spade, type LucideIcon } from "lucide-react";
 import { DisplayBackground } from "@/components/shop/DisplayBackground";
 import { DisplayFooter } from "@/components/shop/DisplayFooter";
 import { DisplayHeader } from "@/components/shop/DisplayHeader";
-import { SuitCard } from "./components/home/SuitCard";
-import { StoreCategoryChips } from "./components/home/StoreCategoryChips";
+import { SuitCard } from "@/components/shop/SuitCard";
+import { StoreCategoryChips } from "@/components/shop/StoreCategoryChips";
 
 export const metadata: Metadata = {
   title: "Início | Doce Ilusão",
@@ -42,9 +42,9 @@ type TSuitCard = {
 
 const SUIT_CARDS: TSuitCard[] = [
   { name: "Vídeos", Icon: Diamond, red: true, href: "/videos" }, // verificar url
-  { name: "Baralhos", Icon: Spade, red: false, href: "/baralho" },
+  { name: "Baralhos", Icon: Spade, red: false, href: "loja?category=Baralhos" },
   { name: "Trukes", Icon: Heart, red: true, href: "/trukes" },
-  { name: "Livros", Icon: Club, red: false, href: "/livros" },
+  { name: "Livros", Icon: Club, red: false, href: "loja?category=Livros" },
 ];
 
 const STORE_CATEGORIES = ["Baralho", "Acessórios", "Vídeos"]; // Devera vir do backend.
@@ -62,52 +62,7 @@ export default function HomePage() {
 
         {/* Hero carousel — suit category cards (SPA Home parity). Pure CSS
             scroll-snap (no client JS): swipe/scroll horizontally. */}
-        {/* <div className="grid grid-cols-2 md:flex snap-x snap-mandatory  gap-6 overflow-x-auto p-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {SUIT_CARDS.map(({ name, Icon, red }) => (
-            <Link
-              key={name}
-              href="/loja"
-              aria-label={`Ir para a loja — ${name}`}
-              className="group flex aspect-square w-[200px] shrink-0 snap-center flex-col items-center justify-between rounded-2xl border border-white/10 bg-gradient-to-br from-gray-800/80 via-gray-700/60 to-gray-800/80 p-6 shadow-2xl backdrop-blur-sm transition-all duration-300 hover:-translate-y-2 hover:border-amber-300/50 hover:shadow-lg hover:shadow-amber-500/10 md:w-[250px]"
-            >
-              <span className="flex w-full items-center gap-3 text-2xl font-semibold text-white">
-                <Icon
-                  size={28}
-                  strokeWidth={1.5}
-                  className={
-                    red
-                      ? "fill-[#FF0000] text-[#FF0000]"
-                      : "fill-white text-white"
-                  }
-                />
-                {name}
-              </span>
 
-              <Icon
-                size={150}
-                strokeWidth={1}
-                className={
-                  red
-                    ? "fill-[#FF0000] text-[#FF0000] transition-transform duration-300 group-hover:scale-110"
-                    : "fill-white text-white transition-transform duration-300 group-hover:scale-110"
-                }
-              />
-
-              <span className="flex w-full rotate-180 items-center justify-end gap-3 text-2xl font-semibold text-white">
-                <Icon
-                  size={28}
-                  strokeWidth={1.5}
-                  className={
-                    red
-                      ? "fill-[#FF0000] text-[#FF0000]"
-                      : "fill-white text-white"
-                  }
-                />
-                {name}
-              </span>
-            </Link>
-          ))}
-        </div> */}
         <div className="grid grid-cols-2 md:flex">
           {SUIT_CARDS.map((card) => (
             <SuitCard
@@ -124,13 +79,12 @@ export default function HomePage() {
         <div className="mt-12 flex flex-col items-center gap-6">
           <Link
             href="/loja"
-            className="rounded-xl bg-gradient-to-r from-gray-200 to-gray-700 px-10 py-4 text-lg font-bold text-gray-900 shadow-lg shadow-gray-900 transition-all hover:brightness-110 active:scale-95  hover:border-amber-300/50 hover:shadow-lg hover:shadow-amber-500/10"
+            className="rounded-xl bg-gradient-to-r from-gray-200 to-gray-700 px-10 py-4 text-lg font-bold text-gray-900 shadow-lg shadow-gray-900 transition-all hover:brightness-110 active:scale-95  brand-hover"
           >
             Explorar a loja
           </Link>
 
           <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-gray-300">
-            <span className="text-gray-400">Categorias:</span>
             <StoreCategoryChips categories={STORE_CATEGORIES} />
           </div>
         </div>
