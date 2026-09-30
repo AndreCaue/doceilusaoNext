@@ -38,7 +38,12 @@ import { ip } from "@/lib/auth/ip";
 import { verifyPassword } from "@/lib/auth/password";
 import { RATE_LIMITS, rateLimit } from "@/lib/auth/rate-limit";
 
-function errorResponse(message: string, code: string, status: number, retryable = false) {
+function errorResponse(
+  message: string,
+  code: string,
+  status: number,
+  retryable = false,
+) {
   return NextResponse.json({ error: message, code, retryable }, { status });
 }
 
@@ -66,8 +71,17 @@ export async function POST(req: NextRequest) {
     const username = form.get("username");
     const password = form.get("password");
     // urlencoded body → both are strings; File values can never satisfy this.
-    if (typeof username !== "string" || typeof password !== "string" || username === "" || password === "") {
-      return errorResponse("Username e senha são obrigatórios", "BAD_REQUEST", 400);
+    if (
+      typeof username !== "string" ||
+      typeof password !== "string" ||
+      username === "" ||
+      password === ""
+    ) {
+      return errorResponse(
+        "Username e senha são obrigatórios",
+        "BAD_REQUEST",
+        400,
+      );
     }
 
     // Rate limit BEFORE credential work (brute-force abatement, T-26-05-01).
@@ -134,16 +148,37 @@ export async function POST(req: NextRequest) {
       jti = payload.jti;
       expiresAt = new Date(payload.exp * 1000);
     } catch {
-      return errorResponse("Erro ao gerar refresh token", "INTERNAL_ERROR", 500, true);
+      return errorResponse(
+        "Erro ao gerar refresh token",
+        "INTERNAL_ERROR",
+        500,
+        true,
+      );
     }
 
     try {
       await saveRefreshToken({ jti, userId: user.id, expiresAt });
-    } catch {
-      // jti collision or DB failure — do not hand out an unpersisted refresh
-      // token (a refresh would 401 "revogado ou expirado" later).
-      return errorResponse("Erro ao gerar refresh token", "INTERNAL_ERROR", 500, true);
+    } catch (err) {
+      console.error("[POST /api/auth/token] saveRefreshToken ERROR:", err);
+
+      return errorResponse(
+        "Erro ao gerar refresh token",
+        "INTERNAL_ERROR",
+        500,
+        true,
+      );
     }
+    // catch {
+    //   // jti collision or DB failure — do not hand out an unpersisted refresh
+    //   // token (a refresh would 401 "revogado ou expirado" later).
+    //   console.error("[POST /api/auth/token] ERROR:", err);
+    //   return errorResponse(
+    //     "Erro ao gerar refresh token",
+    //     "INTERNAL_ERROR",
+    //     500,
+    //     true,
+    //   );
+    // }
 
     // is_master — routes.py:262-264 parity: role master AND master scope.
     const isMaster = user.role === "master" && scopes.includes("master");
@@ -160,11 +195,15 @@ export async function POST(req: NextRequest) {
     // attributes — httpOnly/secure-prod/lax/path=/30d).
     const response = new NextResponse(JSON.stringify(tokenResponse), {
       status: 200,
-      headers: { "content-type": "application/json", "cache-control": "no-store" },
+      headers: {
+        "content-type": "application/json",
+        "cache-control": "no-store",
+      },
     });
     setAuthCookies(response, { accessToken, refreshToken });
     return response;
   } catch (err) {
+    console.error("[POST /api/auth/token] ERROR:", err);
     if (err instanceof AuthError) {
       return errorResponse(err.message, err.code, err.status, err.retryable);
     }
