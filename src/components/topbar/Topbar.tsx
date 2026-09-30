@@ -20,7 +20,7 @@ import type { TValue } from "./UserTopbar";
 export const Topbar = () => {
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState<string | null>("");
-  const { user, logout, isGuest } = useAuth();
+  const { user, logout, isGuest, isLoading } = useAuth();
   const { summary } = useCart();
 
   const handleLogout = (value: TValue) => {
@@ -61,6 +61,7 @@ export const Topbar = () => {
           <UserTopbar
             userEmail={user?.email ?? ""}
             isGuest={isGuest}
+            isLoading={isLoading}
             onSelect={handleLogout}
             label="hidden lg:flex"
             options={[

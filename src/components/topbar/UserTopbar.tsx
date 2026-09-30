@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import React from "react";
 import { cn } from "@/lib/utils";
-import { User2 } from "lucide-react";
+import { LoaderCircle, User2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export type TValue = {
@@ -28,6 +28,7 @@ type TUserTopbar = {
   options: TCustomValue[];
   userEmail?: string;
   isGuest?: boolean;
+  isLoading?: boolean;
   onChangeValue?: () => void;
   onSelect?: (value: TValue) => void;
   className?: string;
@@ -38,6 +39,7 @@ export const UserTopbar = ({
   onSelect,
   userEmail = "",
   isGuest = true,
+  isLoading,
   className,
 }: TUserTopbar) => {
   const ref = useRef<HTMLButtonElement>(null);
@@ -54,7 +56,9 @@ export const UserTopbar = ({
     return () => observer.disconnect();
   }, []);
 
-  if (isGuest) {
+  if (isLoading) return <LoaderCircle className="mr-10 animate-spin" />;
+
+  if (isGuest && !isLoading) {
     return (
       <div className="hidden lg:flex items-center gap-2">
         <a
